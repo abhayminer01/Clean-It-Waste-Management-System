@@ -1,10 +1,23 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const session = require('express-session');
 
 const app = express();
 
+app.use(cors({
+    origin : ['http://localhost:5173'],
+    credentials : true
+}));
 
-app.get('/', (req, res) => res.send("Hello World!"));
+app.use(session({
+    secret : process.env.SESSION_SECRET,
+    cookie : {
+        httpOnly : true,
+        secure : false,
+    }
+}))
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
