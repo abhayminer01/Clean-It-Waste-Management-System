@@ -4,6 +4,8 @@ const cors = require('cors');
 const session = require('express-session');
 const connectDatabase = require('./configs/database');
 
+const authRoutes = require('./routes/auth.routes');
+
 const app = express();
 
 app.use(cors({
@@ -20,6 +22,8 @@ app.use(session({
         secure : false,
     }
 }));
+
+app.use('/api/auth', authRoutes);
 
 
 const PORT = process.env.PORT;
