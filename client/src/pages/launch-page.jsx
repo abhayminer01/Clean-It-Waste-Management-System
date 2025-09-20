@@ -1,8 +1,9 @@
 import React from "react";
 import NavBar from "../components/navbar";
-import UserLogin from "../components/user-login";
+import { useNavigate } from "react-router-dom";
 
 export default function LaunchPage() {
+  const navigate = useNavigate();
   return (
     <div className="bg-gradient-to-br from-black via-green-900/60 to-black min-h-screen w-full text-white">
       {/* Hero Section */}
@@ -16,7 +17,7 @@ export default function LaunchPage() {
             Manage waste, earn rewards, and help save the planet.
           </p>
           <div className="flex gap-4">
-            <button className="px-20 py-3 rounded-xl bg-green-600 hover:bg-green-700 transition-all font-semibold">
+            <button className="px-20 py-3 rounded-xl bg-green-600 hover:bg-green-700 transition-all font-semibold" onClick={() => navigate('./login')}>
               Get Started
             </button>
           </div>
