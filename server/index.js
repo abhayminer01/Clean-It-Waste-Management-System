@@ -12,11 +12,13 @@ app.use(cors({
 
 app.use(session({
     secret : process.env.SESSION_SECRET,
+    saveUninitialized : false,
+    resave : false,
     cookie : {
         httpOnly : true,
         secure : false,
     }
-}))
+}));
 
 
 const PORT = process.env.PORT;
