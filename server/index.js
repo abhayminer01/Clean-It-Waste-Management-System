@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const connectDatabase = require('./configs/database');
 
 const app = express();
 
@@ -24,4 +25,5 @@ app.use(session({
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server Running On ${PORT}`);
+    connectDatabase();
 })
