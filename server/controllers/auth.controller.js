@@ -2,6 +2,10 @@ const registerUser = async (req, res) => {
 
 }
 
+const userLogin = async (req, res) => {
+
+}
+
 const checkAuth = async (req, res) => {
     try {
         res.status(200).json({ success : true });
@@ -13,5 +17,6 @@ const checkAuth = async (req, res) => {
 
 module.exports = {
     registerUser,
-    checkAuth
+    checkAuth,
+    userLogin
 }
