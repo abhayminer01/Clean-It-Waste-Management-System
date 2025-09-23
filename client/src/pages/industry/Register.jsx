@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import localbodyData from "../../services/localbody.json";
+import { registerIndustry } from '../../services/industry-api';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const [district, setDistrict] = useState("");
     const [localbodyType, setLocalbodyType] = useState("");
     const [localbodyOptions, setLocalbodyOptions] = useState([]);
     const districts = Object.keys(localbodyData);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
       if (district && localbodyType) {
@@ -36,7 +40,13 @@ export default function Register() {
             localbody_name : e.target.localbodyname.value,
         };
 
-        console.log(payload);
+        const res = await registerIndustry(payload);
+              
+        if (res?.success) {
+            navigate("/home");
+        } else {
+            alert(res?.message || "Failed to Register!");
+        }
     }
   return (
     <div>

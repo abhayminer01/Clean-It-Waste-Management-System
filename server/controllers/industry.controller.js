@@ -1,4 +1,5 @@
 const Industry = require("../models/industry.model");
+const bcrypt = require('bcrypt');
 
 const registerIndustry = async (req, res) => {
     try {
