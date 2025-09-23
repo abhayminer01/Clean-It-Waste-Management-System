@@ -5,6 +5,7 @@ const session = require('express-session');
 const connectDatabase = require('./configs/database');
 
 const authRoutes = require('./routes/auth.routes');
+const industryRoutes = require('./routes/industry.routes');
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(session({
 }));
 
 app.use('/api/auth', authRoutes);
-
+app.use('/api/industry', industryRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
