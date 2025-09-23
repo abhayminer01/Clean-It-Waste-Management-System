@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import localbodyData from "../services/localbody.json";
-import { userRegistration } from '../services/auth-api';
+import React, { useEffect, useState } from 'react';
+import localbodyData from "../../services/localbody.json";
 
-export default function RegisterPage() {
+export default function Register() {
     const [district, setDistrict] = useState("");
     const [localbodyType, setLocalbodyType] = useState("");
     const [localbodyOptions, setLocalbodyOptions] = useState([]);
     const districts = Object.keys(localbodyData);
-    
-    const navigate = useNavigate();
 
     useEffect(() => {
       if (district && localbodyType) {
@@ -21,66 +17,54 @@ export default function RegisterPage() {
     }, [district, localbodyType]);
 
     const handleForm = async (e) => {
-      e.preventDefault();
+        e.preventDefault();
 
-      const housename = e.target.house.value;
-      const street = e.target.street.value;
-      const town = e.target.town.value;
-      const pin = e.target.pin.value;
-      const address = `${housename},${street},${town} PIN:${pin}`;
+        const building = e.target.building.value;
+        const street = e.target.street.value;
+        const town = e.target.town.value;
+        const pin = e.target.pin.value;
+        const address = `${building},${street},${town} PIN:${pin}`;
 
-      const payload = {
-        full_name : e.target.name.value,
-        email : e.target.email.value,
-        password : e.target.password.value,
-        adhaar : e.target.adhaar.value,
-        mobile_number : e.target.mobile.value,
-        address : address,
-        district : e.target.district.value,
-        localbody_type : e.target.localbodytype.value,
-        localbody_name : e.target.localbodyname.value
-      };
-       
-      const res = await userRegistration(payload);
-      
-      if (res?.success) {
-          navigate("/home");
-      } else {
-          alert(res?.message || "Failed to Register!");
-      }
+        const payload = {
+            email : e.target.email.value,
+            password : e.target.password.value,
+            licence : e.target.licence.value,
+            name : e.target.name.value,
+            address,
+            district : e.target.district.value,
+            localbody_type : e.target.localbodytype.value,
+            localbody_name : e.target.localbodyname.value,
+        };
+
+        console.log(payload);
     }
-
   return (
     <div>
         <form onSubmit={handleForm} className='flex flex-col gap-10 items-center bg-green-100'>
-            <h1>Register User</h1>
+            <h1>Register Industrial User</h1>
             <div>
-              <label>Full Name : </label>
-              <input name='name' className='border rounded-lg w-60' type="text" />
+                <label>Email : </label>
+                <input name='email' className='border rounded-lg w-60' type="email" />
             </div>
             <div>
-              <label>Email : </label>
-              <input name='email' className='border rounded-lg w-60' type="email" />
-            </div>
-            <div>
-              <label>Password : </label>
-              <input name='password' className='border rounded-lg w-60' type="password" />
+                <label>password : </label>
+                <input name='password' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
                 <label>Confirm Password : </label>
-                <input name='confirm' className='border rounded-lg w-60' type="password" />
+                <input name='confirm' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
-                <label>Adhaar Number : </label>
-                <input name='adhaar' className='border rounded-lg w-60' type="number" />
+                <label>Industry Licence Number : </label>
+                <input name='licence' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
-                <label>Mobile Number : </label>
-                <input name='mobile' className='border rounded-lg w-60' type="number" />
+                <label>Industry Name : </label>
+                <input name='name' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
-                <label>House name : </label>
-                <input name='house' className='border rounded-lg w-60' type="text" />
+                <label>Building name : </label>
+                <input name='building' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
                 <label>Street : </label>
@@ -163,8 +147,6 @@ export default function RegisterPage() {
               ))}
             </select>
           </div>
-          <p>Already have an account? <span onClick={() => navigate('/login')} className='text-green-600 cursor-pointer'>Login</span></p>
-          <p>Register as Industrial User ? <span onClick={() => navigate('/industry/register')} className='text-green-600 cursor-pointer'>Click here</span></p>
           <input type="submit"/>
         </form>
     </div>
