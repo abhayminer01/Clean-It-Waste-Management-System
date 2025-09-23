@@ -2,7 +2,33 @@ const User = require("../models/user.model");
 const bcrypt = require('bcrypt');
 
 const registerUser = async (req, res) => {
+    const { full_name, email, password, adhaar, mobile_number, address, district, localbody_type, localbody_name } = req.body;
+    
+    if(!full_name || !email || !password || !adhaar || !mobile_number || !address || !district || !localbody_type || !localbody_name) {
+        return res.status(400).json({ success : false, message : "All fields are required !" });
+    }
 
+    const existingUser = await User.findOne({ email });
+    if(existingUser) {
+        return res.status(401).json({ success : false, message : "User Already Exists !" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+        full_name,
+        email,
+        password : hashedPassword,
+        mobile_number,
+        uuid : adhaar,
+        address,
+        district,
+        localbody_type,
+        localbody_name
+    });
+    await user.save();
+
+    req.session.user = { user_id : user._id, email : user.email };
+    res.status(200).json({ success : true, message : "User Registered Successfully" });
 }
 
 const userLogin = async (req, res) => {

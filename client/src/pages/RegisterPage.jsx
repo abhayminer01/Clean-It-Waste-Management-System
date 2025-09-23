@@ -1,44 +1,74 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import localbodyData from "../services/localbody.json";
+import { userRegistration } from '../services/auth-api';
 
 export default function RegisterPage() {
     const [district, setDistrict] = useState("");
     const [localbodyType, setLocalbodyType] = useState("");
     const [localbodyOptions, setLocalbodyOptions] = useState([]);
     const districts = Object.keys(localbodyData);
+    
+    const navigate = useNavigate();
 
     useEffect(() => {
-    if (district && localbodyType) {
-      const options = localbodyData[district]?.[localbodyType] || [];
-      setLocalbodyOptions(options);
-    } else {
-      setLocalbodyOptions([]);
+      if (district && localbodyType) {
+        const options = localbodyData[district]?.[localbodyType] || [];
+        setLocalbodyOptions(options);
+      } else {
+        setLocalbodyOptions([]);
+      }
+    }, [district, localbodyType]);
+
+    const handleForm = async (e) => {
+      e.preventDefault();
+
+      const housename = e.target.house.value;
+      const street = e.target.street.value;
+      const town = e.target.town.value;
+      const pin = e.target.pin.value;
+      const address = `${housename},${street},${town} PIN:${pin}`;
+
+      const payload = {
+        full_name : e.target.name.value,
+        email : e.target.email.value,
+        password : e.target.password.value,
+        adhaar : e.target.adhaar.value,
+        mobile_number : e.target.mobile.value,
+        address : address,
+        district : e.target.district.value,
+        localbody_type : e.target.localbodytype.value,
+        localbody_name : e.target.localbodyname.value
+      };
+       
+      const res = await userRegistration(payload);
+      
+      if (res?.success) {
+          navigate("/home");
+      } else {
+          alert(res?.message || "Failed to Register!");
+      }
     }
-  }, [district, localbodyType]);
 
   return (
     <div>
-        <form>
+        <form onSubmit={handleForm} className='flex flex-col gap-10 items-center bg-green-100'>
             <h1>Register User</h1>
             <div>
-                <label>Full Name : </label>
-                <input name='name' className='border rounded-lg w-60' type="text" />
+              <label>Full Name : </label>
+              <input name='name' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
-                <label>Email : </label>
-                <input name='email' className='border rounded-lg w-60' type="email" />
+              <label>Email : </label>
+              <input name='email' className='border rounded-lg w-60' type="email" />
             </div>
             <div>
-                <label>Password : </label>
-                <input name='password' className='border rounded-lg w-60' type="password" />
+              <label>Password : </label>
+              <input name='password' className='border rounded-lg w-60' type="password" />
             </div>
             <div>
                 <label>Confirm Password : </label>
                 <input name='confirm' className='border rounded-lg w-60' type="password" />
-            </div>
-            <div>
-                <label>Full Name : </label>
-                <input name='name' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
                 <label>Adhaar Number : </label>
@@ -55,6 +85,10 @@ export default function RegisterPage() {
             <div>
                 <label>Street : </label>
                 <input name='street' className='border rounded-lg w-60' type="text" />
+            </div>
+            <div>
+                <label>Town : </label>
+                <input name='town' className='border rounded-lg w-60' type="text" />
             </div>
             <div>
                 <label>Pin Number : </label>
@@ -87,7 +121,7 @@ export default function RegisterPage() {
               Localbody Type
             </label>
             <select
-              name="localbodyType"
+              name="localbodytype"
               value={localbodyType}
               onChange={(e) => setLocalbodyType(e.target.value)}
               className="w-full px-4 py-2 mt-1 border rounded-lg"
@@ -116,7 +150,7 @@ export default function RegisterPage() {
               Localbody Name
             </label>
             <select
-              name="localbodyName"
+              name="localbodyname"
               className="w-full px-4 py-2 mt-1 border rounded-lg"
               required
               disabled={!localbodyType}
@@ -129,6 +163,7 @@ export default function RegisterPage() {
               ))}
             </select>
           </div>
+          <p>Already have an account? <span onClick={() => navigate('/login')} className='text-green-600 cursor-pointer'>Login</span></p>
           <input type="submit"/>
         </form>
     </div>

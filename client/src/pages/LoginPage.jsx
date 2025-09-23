@@ -15,7 +15,7 @@ export default function LoginPage() {
         const res = await userLogin(payload);
 
         if (res?.success) {
-            navigate("/dashboard"); 
+            navigate("/home"); 
         } else {
             alert(res?.message || "Login failed!");
         }

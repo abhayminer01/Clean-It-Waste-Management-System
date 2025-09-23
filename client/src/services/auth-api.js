@@ -8,7 +8,20 @@ export const userLogin = async (payload) => {
             withCredentials : true
         });
         const res = req.data;
-        console.log(res);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response?.data;
+    }
+}
+
+
+export const userRegistration = async (payload) => {
+    try {
+        const req = await axios.post(`${BASE_URL}/auth/register`, payload, {
+            withCredentials : true
+        });
+        const res = req.data;
         return res;
     } catch (error) {
         console.log(error);
