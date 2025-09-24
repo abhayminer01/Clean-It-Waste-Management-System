@@ -84,5 +84,6 @@ const checkStatus = async (req, res) => {
 module.exports = {
     registerIndustry,
     checkAuth,
-    loginIndustry
+    loginIndustry,
+    checkStatus
 }

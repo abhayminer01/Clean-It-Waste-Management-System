@@ -40,3 +40,17 @@ export const checkAuth = async () => {
         return error.response?.data;
     }
 }
+
+export const checkStatus = async () => {
+    try {
+        const req = await axios.get(`${BASE_URL}/industry/check-status`, {
+            withCredentials : true
+        });
+        const res = req.data;
+        console.log(res);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response?.data;
+    }
+}
