@@ -11,7 +11,7 @@ export default function IndustryLogin() {
             email : e.target.email.value,
             password : e.target.password.value
         }
-        const res = await userLogin(payload);
+        const res = await IndustryLogin(payload);
 
         if (res?.success) {
             navigate("/industry/home"); 
@@ -35,7 +35,7 @@ export default function IndustryLogin() {
                 <label>Password : </label>
                 <input name='password' className='border border-solid rounded-lg px-1'  type="password" />
             </div>
-            <p>Dont have an account? <span className='text-green-600 cursor-pointer' onClick={() => navigate('/register')}>Sign Up</span></p>
+            <p>Dont registered your industry ? <span className='text-green-600 cursor-pointer' onClick={() => navigate('/industry/register')}>Register</span></p>
             <input className='bg-green-500 px-10 py-1 rounded-lg' type="submit" />
         </form>
     </div>

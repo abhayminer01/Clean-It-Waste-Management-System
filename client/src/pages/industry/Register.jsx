@@ -157,6 +157,7 @@ export default function Register() {
               ))}
             </select>
           </div>
+          <p>Already registered your industry? <span className='text-green-600 cursor-pointer' onClick={() => navigate('/industry/login')}>Login</span></p>
           <input type="submit"/>
         </form>
     </div>

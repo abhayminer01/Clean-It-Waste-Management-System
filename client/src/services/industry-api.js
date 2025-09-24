@@ -14,6 +14,19 @@ export const registerIndustry = async (payload) => {
     }
 }
 
+export const loginIndustry = async (payload) => {
+    try {
+        const req = await axios.post(`${BASE_URL}/industry/login`, payload, {
+            withCredentials : true
+        });
+        const res = req.data;
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response?.data;
+    }
+}
+
 
 export const checkAuth = async () => {
     try {
