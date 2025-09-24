@@ -7,14 +7,18 @@ export default function IndustryHome() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function fetchData() {
+        async function checkSession() {
             const req = await checkAuth();
             if(!req?.success) {
                 navigate('/industry/login');
             }
         }
 
-        fetchData();
+        async function checkStatus() {
+            
+        }
+
+        checkSession();
     }, []);
   return (
     <div>IndustryHome</div>

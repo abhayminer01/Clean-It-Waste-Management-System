@@ -37,6 +37,7 @@ export default function LoginPage() {
                 <input name='password' className='border border-solid rounded-lg px-1'  type="password" />
             </div>
             <p>Dont have an account? <span className='text-green-600 cursor-pointer' onClick={() => navigate('/register')}>Sign Up</span></p>
+            <p>Industrial User ? <span className='text-green-600 cursor-pointer' onClick={() => navigate('/industry/login')}>Click here</span></p>
             <input className='bg-green-500 px-10 py-1 rounded-lg' type="submit" />
         </form>
     </div>

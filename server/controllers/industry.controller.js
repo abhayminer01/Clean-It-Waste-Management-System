@@ -71,6 +71,16 @@ const checkAuth = async (req, res) => {
     }
 }
 
+const checkStatus = async (req, res) => {
+    try {
+        const user = req.user;
+        res.status(400).json({ success : true, status : user.status });
+    } catch (error) {
+        res.status(500).json({ success : false, message : 'Error Occured', err : error });
+        console.log(error);
+    }
+}
+
 module.exports = {
     registerIndustry,
     checkAuth,
