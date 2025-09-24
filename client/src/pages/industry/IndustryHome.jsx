@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { checkAuth, checkStatus } from '../../services/industry-api'
 import { useNavigate } from 'react-router-dom';
 
 export default function IndustryHome() {
   const navigate = useNavigate();
+
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     async function checkSession() {
@@ -15,17 +17,19 @@ export default function IndustryHome() {
 
     async function loadStatus() {
       const req = await checkStatus();
-      if(req.status === 'unverified') {
-        alert('You need to wait until getting verified...Status : pending');
-        navigate('/');
-      }
+      setStatus(req.status);
     }
 
     checkSession();
     loadStatus();
-  }, [navigate]);
+  }, []);
 
   return (
-    <div>IndustryHome</div>
+    <div>IndustryHome
+      {status === 'pending' && <>
+        <h1>You need to wait for the confirmation of admin.</h1>
+      </>}
+
+    </div>
   )
 }

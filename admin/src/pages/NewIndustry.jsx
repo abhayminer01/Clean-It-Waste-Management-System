@@ -41,7 +41,7 @@ export default function NewIndustry() {
   const handleReject = async (id) => {
     const res = await rejectIndustry(id);
     if (res?.success) {
-      alert("Industry rejected! It will be deleted after 24 hours.");
+      alert("Industry rejected! Mail Send");
       // remove the rejected industry from state
       setIndustries((prev) => prev.filter((ind) => ind._id !== id));
     } else {
