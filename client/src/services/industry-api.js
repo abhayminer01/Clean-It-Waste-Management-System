@@ -13,3 +13,17 @@ export const registerIndustry = async (payload) => {
         return error.response?.data;
     }
 }
+
+
+export const checkAuth = async () => {
+    try {
+        const req = await axios.get(`${BASE_URL}/industry/checkauth`, {
+            withCredentials : true
+        });
+        const res = req.data;
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response?.data;
+    }
+}

@@ -43,7 +43,7 @@ export default function Register() {
         const res = await registerIndustry(payload);
               
         if (res?.success) {
-            navigate("/home");
+            navigate("/industry/home");
         } else {
             alert(res?.message || "Failed to Register!");
         }
