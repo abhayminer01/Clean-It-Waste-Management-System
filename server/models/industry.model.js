@@ -15,8 +15,8 @@ const industrySchema = new mongoose.Schema({
     },
     status : {
         type : String,
-        enum : ['verified', 'unverified'],
-        default : 'unverified'
+        enum : ['verified', 'pending', 'rejected'],
+        default : 'pending'
     },
     address : {
         type : String

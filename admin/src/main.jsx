@@ -4,6 +4,7 @@ import './index.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
+import NewIndustry from './pages/NewIndustry';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -11,6 +12,7 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path='/' element = { <LoginPage /> }/>
         <Route path='dashboard' element = { <Dashboard /> } />
+        <Route path='industry/new' element = { <NewIndustry /> } />
       </Routes>
     </Router>
   </StrictMode>
