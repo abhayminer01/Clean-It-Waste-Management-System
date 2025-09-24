@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import NewIndustry from './pages/NewIndustry';
+import ManageIndustry from './pages/ManageIndustry';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/' element = { <LoginPage /> }/>
         <Route path='dashboard' element = { <Dashboard /> } />
         <Route path='industry/new' element = { <NewIndustry /> } />
+        <Route path='industry/manage' element = { <ManageIndustry /> } />
       </Routes>
     </Router>
   </StrictMode>

@@ -5,5 +5,6 @@ router.post('/login', adminController.adminLogin);
 router.get('/new-industry', adminController.getNewIndustry);
 router.put("/industry/:id/verify", adminController.verifyIndustry);
 router.put("/industry/:id/reject", adminController.rejectIndustry);
+router.get('/industry', adminController.getIndustries);
 
 module.exports = router;

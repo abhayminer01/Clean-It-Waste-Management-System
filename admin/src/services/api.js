@@ -54,3 +54,15 @@ export const rejectIndustry = async (id) => {
     return error.response?.data;
   }
 };
+
+export const getIndustries = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/admin/industry`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};

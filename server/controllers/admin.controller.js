@@ -1,6 +1,7 @@
 const Admin = require("../models/admin.model");
 const Industry = require("../models/industry.model");
 
+// ADMIN LOGIN
 const adminLogin = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -22,6 +23,7 @@ const adminLogin = async (req, res) => {
     }
 }
 
+// GET INDUSTRIES WITH STATUS : PENDING
 const getNewIndustry = async (req, res) => {
     try {
         const industries = await Industry.find({ status: "pending" });
@@ -48,10 +50,10 @@ const getNewIndustry = async (req, res) => {
     }
 };
 
-// Verify an industry
+// VERIFY INDUSTRY
 const verifyIndustry = async (req, res) => {
   try {
-    const { id } = req.params; // industry id
+    const { id } = req.params;
     const industry = await Industry.findByIdAndUpdate(
       id,
       { status: "verified" },
@@ -77,7 +79,7 @@ const verifyIndustry = async (req, res) => {
   }
 };
 
-// Reject an industry (delete from DB)
+// REJECT INDUSTRY AND DELETE FROM DB
 const rejectIndustry = async (req, res) => {
   try {
     const { id } = req.params;
@@ -101,9 +103,37 @@ const rejectIndustry = async (req, res) => {
   }
 };
 
+// GET ALL INDUSTRIES
+const getIndustries = async (req, res) => {
+  try {
+    const industries = await Industry.find(); // fetch all industries
+
+    if (!industries || industries.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No industries found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message : "Successfully fetched",
+      data: industries,
+    });
+  } catch (error) {
+    console.error("Error fetching industries:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching industries",
+      err: error.message,
+    });
+  }
+};
+
 module.exports = {
     adminLogin,
     getNewIndustry,
     rejectIndustry,
-    verifyIndustry
+    verifyIndustry,
+    getIndustries
 }
