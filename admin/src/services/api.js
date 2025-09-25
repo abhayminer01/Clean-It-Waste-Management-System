@@ -1,5 +1,6 @@
 import axios from 'axios';
 const BASE_URL = 'http://localhost:5000/api';
+const FORMSPREE_URL = "https://formspree.io/f/manpnbpn";
 
 export const adminLogin = async (payload) => {
   try {
@@ -40,20 +41,26 @@ export const verifyIndustry = async (id) => {
   }
 };
 
-// ✅ Reject Industry
-export const rejectIndustry = async (id) => {
-  try {
-    const req = await axios.put(
-      `${BASE_URL}/admin/industry/${id}/reject`,
-      {},
-      { withCredentials: true }
+export const rejectIndustry = async (id, email, industry_name) => { 
+  try { 
+    const req = await axios.put(`${BASE_URL}/admin/industry/${id}/reject`,
+       {}, 
+       { withCredentials: true } 
     );
+    if(req.data.success) {
+      await axios.post(FORMSPREE_URL, {
+        name: "Admin Panel",
+        email: email,
+        message: `Hello ${industry_name},\n\nWe regret to inform you that your industry registration has been rejected.\n\nRegards,\nAdmin Team`,
+      });
+    }
     return req.data;
-  } catch (error) {
-    console.log(error);
-    return error.response?.data;
-  }
+  } catch (error) { 
+    console.log(error); 
+    return error.response?.data; 
+  } 
 };
+
 
 export const getIndustries = async () => {
   try {

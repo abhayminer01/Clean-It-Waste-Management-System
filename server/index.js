@@ -9,6 +9,8 @@ const industryRoutes = require('./routes/industry.routes');
 const adminRoutes = require('./routes/admin.routes');
 const pickupRoutes = require('./routes/pickup.routes');
 const userRoutes = require('./routes/user.routes');
+const paymentRoutes = require("./routes/payment.routes");
+
 
 const app = express();
 
@@ -32,6 +34,7 @@ app.use('/api/industry', industryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pickup', pickupRoutes);
 app.use('/api/user', userRoutes);
+app.use("/api/payment", paymentRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

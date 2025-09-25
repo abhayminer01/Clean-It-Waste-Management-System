@@ -1,6 +1,5 @@
 const Admin = require("../models/admin.model");
 const Industry = require("../models/industry.model");
-const nodemailer = require('nodemailer');
 const Pickup = require("../models/pickup.model");
 const User = require("../models/user.model");
 
@@ -82,40 +81,16 @@ const verifyIndustry = async (req, res) => {
   }
 };
 
-// REJECT INDUSTRY AND DELETE FROM DB (Ethereal Email for testing)
+// REJECT INDUSTRY AND DELETE FROM DB
 const rejectIndustry = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find and delete the industry
     const industry = await Industry.findByIdAndDelete(id);
 
     if (!industry) {
       return res.status(404).json({ success: false, message: "Industry not found" });
     }
-
-    // Create a test account on Ethereal
-    const testAccount = await nodemailer.createTestAccount();
-
-    const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
-
-    const mailOptions = {
-      from: `"Admin Panel" <${testAccount.user}>`,
-      to: industry.email, // recipient email
-      subject: "Industry Registration Rejected",
-      text: `Hello ${industry.industry_name},\n\nWe regret to inform you that your industry registration has been rejected.\n\nRegards,\nAdmin Team`,
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("✅ Preview URL: %s", nodemailer.getTestMessageUrl(info));
 
     return res.status(200).json({ 
       success: true, 

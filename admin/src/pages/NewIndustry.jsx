@@ -38,8 +38,8 @@ export default function NewIndustry() {
   };
 
   // ✅ Handle reject
-  const handleReject = async (id) => {
-    const res = await rejectIndustry(id);
+  const handleReject = async (id, email, name) => {
+    const res = await rejectIndustry(id, email, name);
     if (res?.success) {
       alert("Industry rejected! Mail Send");
       // remove the rejected industry from state
@@ -82,7 +82,7 @@ export default function NewIndustry() {
               Verify
             </button>
             <button
-              onClick={() => handleReject(ind._id)}
+              onClick={() => handleReject(ind._id, ind.email, ind.industry_name)}
               className="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600"
             >
               Reject

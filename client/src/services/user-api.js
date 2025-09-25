@@ -15,6 +15,20 @@ export const createPickup = async (payload) => {
     }
 }
 
+export const createIndustryPickup = async (payload) => {
+    try {
+        const req = await axios.post(`${BASE_URL}/pickup/create-industry`, payload, {
+            withCredentials : true
+        });
+        const res = req.data;
+        console.log(res);
+        return res;
+    } catch (error) {
+        console.log(error);
+        return error.response?.data;
+    }
+}
+
 // Get user pickups
 export const getUserPickups = async () => {
   try {
