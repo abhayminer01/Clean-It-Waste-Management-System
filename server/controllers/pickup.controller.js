@@ -21,7 +21,65 @@ const createPickup = async (req, res) => {
     }
 }
 
+// GET ALL PICKUPS FOR LOGGED-IN USER
+const getUserPickups = async (req, res) => {
+  try {
+    const pickups = await Pickup.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: pickups });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error fetching pickups", err: error });
+  }
+};
+
+// DELETE PICKUP
+const deletePickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pickup = await Pickup.findOneAndDelete({ _id: id, user: req.user._id });
+
+    if (!pickup) {
+      return res.status(404).json({ success: false, message: "Pickup not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Pickup deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error deleting pickup", err: error });
+  }
+};
+
+// UPDATE PICKUP
+const updatePickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { wasteType, pickupDate, timeSlot } = req.body;
+
+    const pickup = await Pickup.findOneAndUpdate(
+      { _id: id, user: req.user._id },
+      {
+        waste_type: wasteType,
+        sheduled_date: pickupDate,
+        scheduled_time: timeSlot,
+      },
+      { new: true }
+    );
+
+    if (!pickup) {
+      return res.status(404).json({ success: false, message: "Pickup not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Pickup updated successfully", data: pickup });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error updating pickup", err: error });
+  }
+};
+
 
 module.exports = {
-    createPickup
+    createPickup,
+    getUserPickups,
+    deletePickup,
+    updatePickup
 }

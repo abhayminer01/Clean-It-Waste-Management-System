@@ -1,6 +1,7 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:5000/api";
 
+// SCHEDULE PICKUPS
 export const createPickup = async (payload) => {
     try {
         const req = await axios.post(`${BASE_URL}/pickup/create`, payload, {
@@ -13,3 +14,36 @@ export const createPickup = async (payload) => {
         return error.response?.data;
     }
 }
+
+// Get user pickups
+export const getUserPickups = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/pickup`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// Delete pickup
+export const deletePickup = async (id) => {
+  try {
+    const req = await axios.delete(`${BASE_URL}/pickup/${id}`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// Update pickup
+export const updatePickup = async (id, payload) => {
+  try {
+    const req = await axios.put(`${BASE_URL}/pickup/${id}`, payload, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
