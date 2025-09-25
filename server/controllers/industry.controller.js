@@ -1,6 +1,7 @@
 const Industry = require("../models/industry.model");
 const bcrypt = require('bcrypt');
 
+// REGISTER INDUSTRIAL USER
 const registerIndustry = async (req, res) => {
     try {
         const { email, password, licence, name, address, district, localbody_type, localbody_name } = req.body;
@@ -34,6 +35,7 @@ const registerIndustry = async (req, res) => {
     }
 }
 
+// INDUSTRIAL USER LOGIN
 const loginIndustry = async (req, res) => {
   try {
     const { email, password, location } = req.body;
@@ -64,9 +66,10 @@ const loginIndustry = async (req, res) => {
   }
 };
 
+// CHECK SESSION
 const checkAuth = async (req, res) => {
     try {
-        if(!req.session.user) {
+        if(!req.session.user || !req.session) {
             return res.status(400).json({ success : false, message : "You Are Not Authenticated" });
         }
         res.status(200).json({ success : true });
@@ -76,6 +79,7 @@ const checkAuth = async (req, res) => {
     }
 }
 
+// CHECK WHETHER ACCEPTED OR NOT
 const checkStatus = async (req, res) => {
     try {
         const user = req.user;
