@@ -1,6 +1,7 @@
 const Admin = require("../models/admin.model");
 const Industry = require("../models/industry.model");
 const nodemailer = require('nodemailer');
+const Pickup = require("../models/pickup.model");
 
 // ADMIN LOGIN
 const adminLogin = async (req, res) => {
@@ -157,10 +158,63 @@ const getIndustries = async (req, res) => {
   }
 };
 
+
+// GET ALL PICKUPS WITH USER DETAILS
+const getAllPickups = async (req, res) => {
+  try {
+    const pickups = await Pickup.find()
+      .populate("user", "full_name email") // show only name & email of user
+      .sort({ createdAt: -1 });
+
+    if (!pickups || pickups.length === 0) {
+      return res.status(404).json({ success: false, message: "No pickups found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Pickups fetched successfully",
+      data: pickups,
+    });
+  } catch (error) {
+    console.error("Error fetching pickups:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching pickups",
+      err: error.message,
+    });
+  }
+};
+
+// DELETE PICKUP BY ADMIN
+const deletePickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pickup = await Pickup.findByIdAndDelete(id);
+
+    if (!pickup) {
+      return res.status(404).json({ success: false, message: "Pickup not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Pickup deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting pickup:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while deleting pickup",
+      err: error.message,
+    });
+  }
+};
+
 module.exports = {
     adminLogin,
     getNewIndustry,
     rejectIndustry,
     verifyIndustry,
-    getIndustries
+    getIndustries,
+    getAllPickups,
+    deletePickup
 }

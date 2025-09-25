@@ -66,3 +66,30 @@ export const getIndustries = async () => {
     return error.response?.data;
   }
 };
+
+
+// ✅ Get all pickups
+export const getAllPickups = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/admin/pickups`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// ✅ Delete a pickup
+export const deletePickup = async (id) => {
+  try {
+    const req = await axios.delete(`${BASE_URL}/admin/pickups/${id}`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
