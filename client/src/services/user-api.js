@@ -30,7 +30,7 @@ export const createIndustryPickup = async (payload) => {
     }
 }
 
-// Get user pickups
+// GET USER'S PICKUP
 export const getUserPickups = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/pickup`, { withCredentials: true });
@@ -41,7 +41,7 @@ export const getUserPickups = async () => {
   }
 };
 
-// Delete pickup
+// DELETE PICKUP
 export const deletePickup = async (id) => {
   try {
     const req = await axios.delete(`${BASE_URL}/pickup/${id}`, { withCredentials: true });
@@ -52,7 +52,7 @@ export const deletePickup = async (id) => {
   }
 };
 
-// Update pickup
+// UPDATE PICKUP
 export const updatePickup = async (id, payload) => {
   try {
     const req = await axios.put(`${BASE_URL}/pickup/${id}`, payload, { withCredentials: true });
@@ -63,7 +63,7 @@ export const updatePickup = async (id, payload) => {
   }
 };
 
-// Get user profile
+// GET USER PROFILE
 export const getProfile = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/user/profile`, { withCredentials: true });
@@ -73,7 +73,7 @@ export const getProfile = async () => {
   }
 };
 
-// Update profile
+// UPDATE PROFILE
 export const updateProfile = async (payload) => {
   try {
     const req = await axios.put(`${BASE_URL}/user/profile`, payload, { withCredentials: true });
@@ -83,7 +83,7 @@ export const updateProfile = async (payload) => {
   }
 };
 
-// Change password
+// CHANGE PASSWORD
 export const changePassword = async (payload) => {
   try {
     const req = await axios.put(`${BASE_URL}/user/change-password`, payload, { withCredentials: true });
@@ -93,7 +93,7 @@ export const changePassword = async (payload) => {
   }
 };
 
-// Logout user
+// LOGOUT USER
 export const logoutUser = async () => {
   try {
     const req = await axios.post(`${BASE_URL}/user/logout`, {}, { withCredentials: true });
