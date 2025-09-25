@@ -8,11 +8,9 @@ export default function LoginPage() {
   const handleForm = async (e) => {
     e.preventDefault();
 
-    // Get email & password
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    // ✅ Get location using browser API
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -21,7 +19,6 @@ export default function LoginPage() {
             lng: pos.coords.longitude,
           };
 
-          // Send login request with location
           const payload = { email, password, location };
           const res = await userLogin(payload);
 
@@ -34,7 +31,6 @@ export default function LoginPage() {
         (err) => {
           console.error("Location error:", err);
 
-          // Fallback: login without location
           const payload = { email, password };
           userLogin(payload).then((res) => {
             if (res?.success) {
@@ -46,7 +42,6 @@ export default function LoginPage() {
         }
       );
     } else {
-      // If geolocation not supported → login without location
       const payload = { email, password };
       const res = await userLogin(payload);
       if (res?.success) {

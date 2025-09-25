@@ -8,22 +8,47 @@ export default function IndustryLogin() {
   const handleForm = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    };
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-    try {
-      const res = await loginIndustry(payload); // 👈 call API, not component
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const location = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
+
+          const payload = { email, password, location };
+          const res = await loginIndustry(payload);
+
+          if (res?.success) {
+            navigate("/industry/home");
+          } else {
+            alert(res?.message || "Login failed!");
+          }
+        },
+        async (err) => {
+          console.error("Location error:", err);
+          const payload = { email, password };
+          const res = await loginIndustry(payload);
+
+          if (res?.success) {
+            navigate("/industry/home");
+          } else {
+            alert(res?.message || "Login failed!");
+          }
+        }
+      );
+    } else {
+      const payload = { email, password };
+      const res = await loginIndustry(payload);
 
       if (res?.success) {
         navigate("/industry/home");
       } else {
         alert(res?.message || "Login failed!");
       }
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Something went wrong!");
     }
   };
 
@@ -43,7 +68,7 @@ export default function IndustryLogin() {
         </div>
 
         <p>
-          Dont registered your industry ?{" "}
+          Dont registered your industry?{" "}
           <span className="text-green-600 cursor-pointer" onClick={() => navigate("/industry/register")}>
             Register
           </span>

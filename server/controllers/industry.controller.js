@@ -35,29 +35,34 @@ const registerIndustry = async (req, res) => {
 }
 
 const loginIndustry = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password, location } = req.body;
 
-        if(!email || !password) {
-            return res.status(400).json({ success : false, message : "All fields are required !" });
-        }
-
-        const industry = await Industry.findOne({ email });
-        if(!industry) {
-            return res.status(400).json({ success : false, message : "User not found" });
-        }
-
-        const compare = await bcrypt.compare(password, industry.password);
-        if(!compare) {
-            return res.status(400).json({ success : false, message : "Password missmatch" });
-        }
-
-        req.session.user = { user_id : industry._id, email : industry.email };
-        res.status(200).json({ success : true, message : "Authenticated successfully !" });
-    } catch (error) {
-        res.status(500).json({ success : false, message : "Error Occured", err : error })
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "All fields are required !" });
     }
-}
+
+    const industry = await Industry.findOne({ email });
+    if (!industry) {
+      return res.status(400).json({ success: false, message: "User not found" });
+    }
+
+    const compare = await bcrypt.compare(password, industry.password);
+    if (!compare) {
+      return res.status(400).json({ success: false, message: "Password mismatch" });
+    }
+
+    if (location) {
+      industry.location_coords = location; 
+      await industry.save();
+    }
+
+    req.session.user = { user_id: industry._id, email: industry.email };
+    res.status(200).json({ success: true, message: "Authenticated successfully !" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error Occurred", err: error });
+  }
+};
 
 const checkAuth = async (req, res) => {
     try {
