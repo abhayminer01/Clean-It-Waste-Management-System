@@ -3,7 +3,7 @@ const Payment = require("../models/payment.model");
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ✅ Create Payment Intent
+// CREATE PAYMENT
 exports.createPaymentIntent = async (req, res) => {
   try {
     const { pickupid } = req.body;
@@ -12,16 +12,14 @@ exports.createPaymentIntent = async (req, res) => {
       return res.status(400).json({ success: false, message: "pickupId is required" });
     }
 
-    const amount = 100; // hardcoded amount in cents ($1.00)
+    const amount = 100;
 
-    // Create Stripe Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: "usd",
       payment_method_types: ["card"],
     });
 
-    // Save Payment in DB
     const payment = await Payment.create({
       user: req.session.user.user_id,
       pickup: pickupid,
@@ -37,14 +35,13 @@ exports.createPaymentIntent = async (req, res) => {
 };
 
 
-// ✅ Confirm Payment (optional, could be via webhook)
+// CONFIRM PAYMENT (OPTIONAL)
 exports.confirmPayment = async (req, res) => {
   try {
     const { paymentId } = req.params;
     const payment = await Payment.findById(paymentId);
     if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
 
-    // For testing: mark succeeded manually
     payment.status = "succeeded";
     await payment.save();
 
@@ -55,7 +52,7 @@ exports.confirmPayment = async (req, res) => {
   }
 };
 
-// ✅ Get all payments of logged-in user
+// GET ALL PAYMENT OF LOGGED IN USER
 exports.getUserPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ user: req.session.user.user_id }).populate("pickup");
@@ -66,7 +63,7 @@ exports.getUserPayments = async (req, res) => {
   }
 };
 
-// ✅ Get Payment by ID
+// GET PAYMENT BY ID
 exports.getPaymentById = async (req, res) => {
   try {
     const { id } = req.params;
