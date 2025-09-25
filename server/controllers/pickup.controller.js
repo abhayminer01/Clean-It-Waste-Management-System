@@ -21,28 +21,6 @@ const createPickup = async (req, res) => {
     }
 }
 
-// Industry pickup
-const createIndustryPickup = async (req, res) => {
-    try {
-        const { wasteType, pickupDate, timeSlot } = req.body;
-        if(!wasteType || !pickupDate || !timeSlot){
-            return res.status(400).json({ success : false, message : "All fields are required" });
-        }
-
-        const pickup = await Pickup.create({
-            user : req.user._id,
-            waste_type : wasteType,
-            scheduled_time : timeSlot,
-            sheduled_date : pickupDate
-        });
-
-        res.status(200).json({ success : true, message : "Pickup Scheduled Succesfully", pickup : pickup});
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ success : false, message : "Error Occured", err : error });
-    }
-}
-
 // GET ALL PICKUPS FOR LOGGED-IN USER
 const getUserPickups = async (req, res) => {
   try {
@@ -98,6 +76,29 @@ const updatePickup = async (req, res) => {
   }
 };
 
+// Industry pickup
+const createIndustryPickup = async (req, res) => {
+    try {
+        const { wasteType, pickupDate, timeSlot } = req.body;
+        if(!wasteType || !pickupDate || !timeSlot){
+            return res.status(400).json({ success : false, message : "All fields are required" });
+        }
+
+        const pickup = await Pickup.create({
+            user : req.user._id,
+            waste_type : wasteType,
+            scheduled_time : timeSlot,
+            sheduled_date : pickupDate,
+            pickup_type : 'industrial'
+        });
+
+        res.status(200).json({ success : true, message : "Pickup Scheduled Succesfully", pickup : pickup});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success : false, message : "Error Occured", err : error });
+    }
+}
+
 // ✅ Get all pickups for logged-in user
 const getIndustryUserPickups = async (req, res) => {
   try {
@@ -134,7 +135,7 @@ const updateIndustryPickup = async (req, res) => {
 const deleteIndustryPickup = async (req, res) => {
   try {
     const { id } = req.params;
-    const pickup = await Pickup.findOneAndDelete({ _id: id, user: req.user._id });
+    const pickup = await Pickup.findByIdAndDelete(id);
 
     if (!pickup) return res.status(404).json({ success: false, message: "Pickup not found" });
 

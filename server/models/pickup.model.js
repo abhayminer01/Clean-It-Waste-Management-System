@@ -19,6 +19,11 @@ const pickupSchema = new mongoose.Schema({
         type : String,
         enum : ["pending", "accepted", "picked"],
         default : "pending"
+    },
+    pickup_type : {
+        type : String,
+        enum : ['household', 'industrial'],
+        default : 'household'
     }
 }, { timestamps : true });
 

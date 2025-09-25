@@ -69,7 +69,7 @@ export const getUserPickups = async () => {
 // ✅ Update pickup
 export const updatePickup = async (id, payload) => {
   try {
-    const req = await axios.put(`${BASE_URL}/${id}`, payload, { withCredentials: true });
+    const req = await axios.put(`${BASE_URL}/industry/${id}`, payload, { withCredentials: true });
     return req.data;
   } catch (error) {
     console.log(error);
@@ -80,7 +80,7 @@ export const updatePickup = async (id, payload) => {
 // ✅ Delete pickup
 export const deletePickup = async (id) => {
   try {
-    const req = await axios.delete(`${BASE_URL}/${id}`, { withCredentials: true });
+    const req = await axios.delete(`${BASE_URL}/industry/${id}`, { withCredentials: true });
     return req.data;
   } catch (error) {
     console.log(error);
