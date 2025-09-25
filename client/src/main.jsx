@@ -9,6 +9,8 @@ import RegisterPage from './pages/RegisterPage';
 import Register from './pages/industry/Register';
 import IndustryHome from './pages/industry/IndustryHome';
 import IndustryLogin from './pages/industry/IndustryLogin';
+import Schedule from './pages/household/Schedule';
+import PickupHistory from './pages/household/PickupHistory';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -22,6 +24,9 @@ createRoot(document.getElementById('root')).render(
         <Route path='industry/register' element = { <Register /> } />
         <Route path='industry/home' element = { <IndustryHome /> } />
         <Route path='/industry/login' element = { <IndustryLogin /> } />
+
+        <Route path='schedule' element = { <Schedule /> } />
+        <Route path='pickup/history' element = { <PickupHistory /> } />
       </Routes>
     </Router>
   </StrictMode>

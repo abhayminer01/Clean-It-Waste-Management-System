@@ -7,6 +7,7 @@ const connectDatabase = require('./configs/database');
 const authRoutes = require('./routes/auth.routes');
 const industryRoutes = require('./routes/industry.routes');
 const adminRoutes = require('./routes/admin.routes');
+const pickupRoutes = require('./routes/pickup.routes');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 app.use('/api/industry', industryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/pickup', pickupRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
