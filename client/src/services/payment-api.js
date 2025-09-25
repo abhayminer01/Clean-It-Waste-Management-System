@@ -28,7 +28,7 @@ export const confirmPayment = async (paymentId, payload) => {
   }
 };
 
-// ✅ Get Payment History for User
+// GET PAYMENT HISTORY OF USER
 export const getUserPayments = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/payment/user`, {
@@ -41,7 +41,7 @@ export const getUserPayments = async () => {
   }
 };
 
-// ✅ Get Payment by ID
+// GET PAYMENT BY ID
 export const getPaymentById = async (id) => {
   try {
     const req = await axios.get(`${BASE_URL}/payment/${id}`, {
