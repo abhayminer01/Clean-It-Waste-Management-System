@@ -13,7 +13,7 @@ export default function HomePage() {
         <div onClick={() => navigate('/pickup/history')} className='bg-green-500 px-5 py-10 rounded-lg hover:bg-green-600 text-white'>
           Pickup History
         </div>
-        <div className='bg-green-500 px-5 py-10 rounded-lg hover:bg-green-600 text-white'>
+        <div onClick={() => navigate('/profile')} className='bg-green-500 px-5 py-10 rounded-lg hover:bg-green-600 text-white'>
           Profile
         </div>
         <div className='bg-green-500 px-5 py-10 rounded-lg hover:bg-green-600 text-white'>
