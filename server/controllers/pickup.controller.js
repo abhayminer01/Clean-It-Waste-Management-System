@@ -7,13 +7,12 @@ const createPickup = async (req, res) => {
             return res.status(400).json({ success : false, message : "All fields are required" });
         }
 
-        const pickup  = Pickup.create({
+        const pickup = Pickup.create({
             user : req.user._id,
             waste_type : wasteType,
             scheduled_time : timeSlot,
             sheduled_date : pickupDate
         });
-        await pickup.save();
 
         res.status(200).json({ success : true, message : "Pickup Scheduled Succesfully" });
     } catch (error) {
