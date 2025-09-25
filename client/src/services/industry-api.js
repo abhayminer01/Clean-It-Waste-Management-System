@@ -55,7 +55,7 @@ export const checkStatus = async () => {
     }
 }
 
-// ✅ Get pickups scheduled by logged-in industrial user
+// GET PICKUP SCHEDULED BY LOGGED IN USER
 export const getUserPickups = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/industry/user/history`, { withCredentials: true });
@@ -66,7 +66,7 @@ export const getUserPickups = async () => {
   }
 };
 
-// ✅ Update pickup
+// UPDATE PICKUP
 export const updatePickup = async (id, payload) => {
   try {
     const req = await axios.put(`${BASE_URL}/industry/${id}`, payload, { withCredentials: true });
@@ -77,7 +77,7 @@ export const updatePickup = async (id, payload) => {
   }
 };
 
-// ✅ Delete pickup
+// DELETE PICKUP
 export const deletePickup = async (id) => {
   try {
     const req = await axios.delete(`${BASE_URL}/industry/${id}`, { withCredentials: true });
