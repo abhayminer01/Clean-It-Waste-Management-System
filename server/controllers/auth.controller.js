@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require('bcrypt');
 
+// REGISTER HOUSEHOLD USER
 const registerUser = async (req, res) => {
     try {
         const { full_name, email, password, adhaar, mobile_number, address, district, localbody_type, localbody_name } = req.body;
@@ -35,6 +36,7 @@ const registerUser = async (req, res) => {
     }
 }
 
+// HOUSEHOLD USER LOGIN
 const userLogin = async (req, res) => {
   try {
     const { email, password, location } = req.body;
@@ -62,10 +64,10 @@ const userLogin = async (req, res) => {
   }
 };
 
-
+// CHECK SESSION STATUS
 const checkAuth = async (req, res) => {
     try {
-        if(!req.session.user) {
+        if(!req.session.user || !req.session) {
             return res.status(400).json({ success : false, message : "You Are Not Authenticated" });
         }
         res.status(200).json({ success : true });
