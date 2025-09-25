@@ -139,7 +139,7 @@ const getIndustries = async (req, res) => {
 const getAllPickups = async (req, res) => {
   try {
     const pickups = await Pickup.find()
-      .populate("user", "full_name email") // show only name & email of user
+      .populate("user", "full_name email")
       .sort({ createdAt: -1 });
 
     if (!pickups || pickups.length === 0) {
@@ -185,7 +185,7 @@ const deletePickup = async (req, res) => {
   }
 };
 
-// ✅ Get all users
+// GET ALL USERS
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
@@ -209,7 +209,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// ✅ Delete a user
+// DELETE A USER
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
