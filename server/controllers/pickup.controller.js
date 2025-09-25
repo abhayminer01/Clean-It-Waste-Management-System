@@ -1,5 +1,6 @@
 const Pickup = require("../models/pickup.model");
 
+// HOUSEHOLD USER PICKUP
 const createPickup = async (req, res) => {
     try {
         const { wasteType, pickupDate, timeSlot } = req.body;
@@ -7,7 +8,7 @@ const createPickup = async (req, res) => {
             return res.status(400).json({ success : false, message : "All fields are required" });
         }
 
-        const pickup = Pickup.create({
+        const pickup = await Pickup.create({
             user : req.user._id,
             waste_type : wasteType,
             scheduled_time : timeSlot,
@@ -21,7 +22,7 @@ const createPickup = async (req, res) => {
     }
 }
 
-// GET ALL PICKUPS FOR LOGGED-IN USER
+// GET ALL PICKUPS FOR LOGGED-IN HOUSEHOLD USERS
 const getUserPickups = async (req, res) => {
   try {
     const pickups = await Pickup.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -32,7 +33,7 @@ const getUserPickups = async (req, res) => {
   }
 };
 
-// DELETE PICKUP
+// DELETE PICKUP (HOUSEHOLD USER)
 const deletePickup = async (req, res) => {
   try {
     const { id } = req.params;
@@ -49,7 +50,7 @@ const deletePickup = async (req, res) => {
   }
 };
 
-// UPDATE PICKUP
+// UPDATE PICKUP (HOUSEHOLD USER)
 const updatePickup = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,7 +77,7 @@ const updatePickup = async (req, res) => {
   }
 };
 
-// Industry pickup
+// INDUSTRIAL USER PICKUP
 const createIndustryPickup = async (req, res) => {
     try {
         const { wasteType, pickupDate, timeSlot } = req.body;
@@ -99,7 +100,7 @@ const createIndustryPickup = async (req, res) => {
     }
 }
 
-// ✅ Get all pickups for logged-in user
+// GET ALL PICKUP FOR LOGGED IN INDUSTRIAL USERS
 const getIndustryUserPickups = async (req, res) => {
   try {
     const pickups = await Pickup.find({ user: req.user._id }).sort({ sheduled_date: -1 });
@@ -110,7 +111,7 @@ const getIndustryUserPickups = async (req, res) => {
   }
 };
 
-// ✅ Update pickup
+// UPDATE PICKUP (INDUSTRIAL USER)
 const updateIndustryPickup = async (req, res) => {
   try {
     const { id } = req.params;
@@ -131,7 +132,7 @@ const updateIndustryPickup = async (req, res) => {
   }
 };
 
-// ✅ Delete pickup
+// DELETE PICKUP (INDUSTRIAL USER)
 const deleteIndustryPickup = async (req, res) => {
   try {
     const { id } = req.params;
