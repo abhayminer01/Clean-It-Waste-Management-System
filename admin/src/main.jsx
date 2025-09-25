@@ -8,6 +8,7 @@ import NewIndustry from './pages/NewIndustry';
 import ManageIndustry from './pages/ManageIndustry';
 import ManagePickups from './pages/ManagePickups';
 import ManageUsers from './pages/ManageUsers';
+import UserDeatails from './pages/UserDeatails';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='industry/manage' element = { <ManageIndustry /> } />
         <Route path='pickup/schedules' element = { <ManagePickups /> } />
         <Route path='users/manage' element = { <ManageUsers /> } />
+        <Route path='users/:id' element={<UserDeatails />} /> 
       </Routes>
     </Router>
   </StrictMode>

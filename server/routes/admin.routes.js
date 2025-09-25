@@ -16,5 +16,7 @@ router.delete("/pickups/:id", adminController.deletePickup);
 // USERS
 router.get("/users", adminController.getAllUsers);
 router.delete("/users/:id", adminController.deleteUser);
+router.get("/users/:id", adminController.getUserById);
+router.put("/users/:id", adminController.updateUser);
 
 module.exports = router;

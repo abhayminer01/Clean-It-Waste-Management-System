@@ -120,3 +120,28 @@ export const deleteUser = async (id) => {
   }
 };
 
+// Get single user
+export const getUserById = async (id) => {
+  try {
+    const req = await axios.get(`${BASE_URL}/admin/users/${id}`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// Update user
+export const updateUser = async (id, payload) => {
+  try {
+    const req = await axios.put(`${BASE_URL}/admin/users/${id}`, payload, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};

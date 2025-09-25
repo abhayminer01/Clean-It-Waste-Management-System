@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getAllPickups, deletePickup } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function ManagePickups() {
   const [pickups, setPickups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchPickups = async () => {
     setLoading(true);
@@ -62,9 +64,16 @@ export default function ManagePickups() {
               </p>
               <p className="mt-2 text-gray-700">
                 <strong>User:</strong>{" "}
-                {pickup.user
-                  ? `${pickup.user.full_name} (${pickup.user.email})`
-                  : "Unknown"}
+                {pickup.user ? (
+                  <span
+                    onClick={() => navigate(`/users/${pickup.user._id}`)}
+                    className="text-blue-600 cursor-pointer hover:underline"
+                  >
+                    {pickup.user.full_name} ({pickup.user.email})
+                  </span>
+                ) : (
+                  "Unknown"
+                )}
               </p>
               <button
                 onClick={() => handleDelete(pickup._id)}

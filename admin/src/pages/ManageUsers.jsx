@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -16,7 +18,8 @@ export default function ManageUsers() {
     setLoading(false);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (e, id) => {
+    e.stopPropagation(); // prevent card click navigation
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     const res = await deleteUser(id);
@@ -44,7 +47,8 @@ export default function ManageUsers() {
           {users.map((user) => (
             <div
               key={user._id}
-              className="bg-white shadow-md rounded-xl p-4 border"
+              onClick={() => navigate(`/users/${user._id}`)}
+              className="bg-white shadow-md rounded-xl p-4 border cursor-pointer hover:shadow-lg transition"
             >
               <h2 className="text-lg font-semibold mb-2 text-gray-800">
                 {user.full_name}
@@ -62,7 +66,7 @@ export default function ManageUsers() {
                 <strong>District:</strong> {user.district || "N/A"}
               </p>
               <button
-                onClick={() => handleDelete(user._id)}
+                onClick={(e) => handleDelete(e, user._id)}
                 className="mt-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
               >
                 Delete

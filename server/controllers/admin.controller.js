@@ -258,6 +258,58 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// GET SINGLE USER
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching user",
+      err: error.message,
+    });
+  }
+};
+
+// UPDATE USER
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const user = await User.findByIdAndUpdate(id, updates, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while updating user",
+      err: error.message,
+    });
+  }
+};
+
 module.exports = {
     adminLogin,
     getNewIndustry,
@@ -267,5 +319,7 @@ module.exports = {
     getAllPickups,
     deletePickup,
     getAllUsers,
-    deleteUser
+    deleteUser,
+    getUserById,
+    updateUser
 }
