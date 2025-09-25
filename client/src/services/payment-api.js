@@ -2,7 +2,7 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:5000/api";
 
-// ✅ Create Payment Intent (Stripe)
+// CREATE PAYMENT
 export const createPaymentIntent = async (payload) => {
   try {
     const req = await axios.post(`${BASE_URL}/payment/create-intent`, payload, {
@@ -15,7 +15,7 @@ export const createPaymentIntent = async (payload) => {
   }
 };
 
-// ✅ Confirm Payment (optional, you can use Stripe webhook instead)
+// CONFIRM PAYMENT (OPTIONAL)
 export const confirmPayment = async (paymentId, payload) => {
   try {
     const req = await axios.post(`${BASE_URL}/payment/${paymentId}/confirm`, payload, {
