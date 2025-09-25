@@ -19,7 +19,7 @@ export default function ManageUsers() {
   };
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // prevent card click navigation
+    e.stopPropagation();
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     const res = await deleteUser(id);
