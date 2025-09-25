@@ -1,6 +1,7 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:5000/api";
 
+// REGISTER INDUSTRIAL USER
 export const registerIndustry = async (payload) => {
     try {
         const req = await axios.post(`${BASE_URL}/industry/register`, payload, {
@@ -14,6 +15,7 @@ export const registerIndustry = async (payload) => {
     }
 }
 
+// LOGIN INDUSTRIAL USER
 export const loginIndustry = async (payload) => {
     try {
         const req = await axios.post(`${BASE_URL}/industry/login`, payload, {
@@ -27,7 +29,7 @@ export const loginIndustry = async (payload) => {
     }
 }
 
-
+// CHECK SESSION
 export const checkAuth = async () => {
     try {
         const req = await axios.get(`${BASE_URL}/industry/checkauth`, {
@@ -41,6 +43,7 @@ export const checkAuth = async () => {
     }
 }
 
+// CHECK USER'S VERIFICATION STATUS
 export const checkStatus = async () => {
     try {
         const req = await axios.get(`${BASE_URL}/industry/check-status`, {
