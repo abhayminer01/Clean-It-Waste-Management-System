@@ -47,3 +47,43 @@ export const updatePickup = async (id, payload) => {
     return error.response?.data;
   }
 };
+
+// Get user profile
+export const getProfile = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/user/profile`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    return error.response?.data;
+  }
+};
+
+// Update profile
+export const updateProfile = async (payload) => {
+  try {
+    const req = await axios.put(`${BASE_URL}/user/profile`, payload, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    return error.response?.data;
+  }
+};
+
+// Change password
+export const changePassword = async (payload) => {
+  try {
+    const req = await axios.put(`${BASE_URL}/user/change-password`, payload, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    return error.response?.data;
+  }
+};
+
+// Logout user
+export const logoutUser = async () => {
+  try {
+    const req = await axios.post(`${BASE_URL}/user/logout`, {}, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    return error.response?.data;
+  }
+};

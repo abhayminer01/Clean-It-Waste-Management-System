@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth.routes');
 const industryRoutes = require('./routes/industry.routes');
 const adminRoutes = require('./routes/admin.routes');
 const pickupRoutes = require('./routes/pickup.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/industry', industryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pickup', pickupRoutes);
+app.use('/api/user', userRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
