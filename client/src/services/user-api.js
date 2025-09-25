@@ -1,7 +1,7 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:5000/api";
 
-// SCHEDULE PICKUPS
+// SCHEDULE PICKUPS (HOUSEHOLD)
 export const createPickup = async (payload) => {
     try {
         const req = await axios.post(`${BASE_URL}/pickup/create`, payload, {
@@ -15,6 +15,7 @@ export const createPickup = async (payload) => {
     }
 }
 
+// SCHEDULE PICKUP (INDUSTRY)
 export const createIndustryPickup = async (payload) => {
     try {
         const req = await axios.post(`${BASE_URL}/pickup/create-industry`, payload, {
