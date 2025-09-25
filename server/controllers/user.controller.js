@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
 
-// ✅ Get Profile
+// GET PROFILE
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.session.user.user_id).select("-password");
@@ -14,7 +14,7 @@ const getProfile = async (req, res) => {
   }
 };
 
-// ✅ Update Profile
+// UPDATE PROFILE
 const updateProfile = async (req, res) => {
   try {
     const { full_name, mobile_number, address, district } = req.body;
@@ -30,7 +30,7 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// ✅ Change Password
+// CHANGE PASSWORD
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -54,7 +54,7 @@ const changePassword = async (req, res) => {
   }
 };
 
-// ✅ Logout
+// LOGOUT
 const logoutUser = (req, res) => {
   req.session.destroy(() => {
     res.json({ success: true, message: "Logged out successfully" });
