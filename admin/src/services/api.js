@@ -93,3 +93,30 @@ export const deletePickup = async (id) => {
     return error.response?.data;
   }
 };
+
+// ✅ Get all users
+export const getAllUsers = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/admin/users`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// ✅ Delete user
+export const deleteUser = async (id) => {
+  try {
+    const req = await axios.delete(`${BASE_URL}/admin/users/${id}`, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+

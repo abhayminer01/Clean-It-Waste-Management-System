@@ -13,4 +13,8 @@ router.get('/industry', adminController.getIndustries);
 router.get("/pickups", adminController.getAllPickups);
 router.delete("/pickups/:id", adminController.deletePickup);
 
+// USERS
+router.get("/users", adminController.getAllUsers);
+router.delete("/users/:id", adminController.deleteUser);
+
 module.exports = router;

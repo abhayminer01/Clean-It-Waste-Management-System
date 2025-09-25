@@ -2,6 +2,7 @@ const Admin = require("../models/admin.model");
 const Industry = require("../models/industry.model");
 const nodemailer = require('nodemailer');
 const Pickup = require("../models/pickup.model");
+const User = require("../models/user.model");
 
 // ADMIN LOGIN
 const adminLogin = async (req, res) => {
@@ -209,6 +210,54 @@ const deletePickup = async (req, res) => {
   }
 };
 
+// ✅ Get all users
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ success: false, message: "No users found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching users",
+      err: error.message,
+    });
+  }
+};
+
+// ✅ Delete a user
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while deleting user",
+      err: error.message,
+    });
+  }
+};
+
 module.exports = {
     adminLogin,
     getNewIndustry,
@@ -216,5 +265,7 @@ module.exports = {
     verifyIndustry,
     getIndustries,
     getAllPickups,
-    deletePickup
+    deletePickup,
+    getAllUsers,
+    deleteUser
 }
