@@ -2,6 +2,7 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:5000/api';
 const FORMSPREE_URL = "https://formspree.io/f/manpnbpn";
 
+// ADMIN LOGIN
 export const adminLogin = async (payload) => {
   try {
     const req = await axios.post(`${BASE_URL}/admin/login`, payload, {
@@ -14,6 +15,7 @@ export const adminLogin = async (payload) => {
   }
 };
 
+// GET UNVERIFIED INDUSTRIES
 export const getNewIndustry = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/admin/new-industry`, {
@@ -26,7 +28,7 @@ export const getNewIndustry = async () => {
   }
 };
 
-// ✅ Verify Industry
+// VERIFY INDUSTRY
 export const verifyIndustry = async (id) => {
   try {
     const req = await axios.put(
@@ -41,6 +43,7 @@ export const verifyIndustry = async (id) => {
   }
 };
 
+// REJECT INDUSTRY
 export const rejectIndustry = async (id, email, industry_name) => { 
   try { 
     const req = await axios.put(`${BASE_URL}/admin/industry/${id}/reject`,
@@ -61,7 +64,7 @@ export const rejectIndustry = async (id, email, industry_name) => {
   } 
 };
 
-
+// GET ALL INDUSTRIES
 export const getIndustries = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/admin/industry`, {
@@ -75,7 +78,7 @@ export const getIndustries = async () => {
 };
 
 
-// ✅ Get all pickups
+// GET ALL PICKUPS
 export const getAllPickups = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/admin/pickups`, {
@@ -88,7 +91,7 @@ export const getAllPickups = async () => {
   }
 };
 
-// ✅ Delete a pickup
+// DELETE PICKUP
 export const deletePickup = async (id) => {
   try {
     const req = await axios.delete(`${BASE_URL}/admin/pickups/${id}`, {
@@ -101,7 +104,7 @@ export const deletePickup = async (id) => {
   }
 };
 
-// ✅ Get all users
+// GET ALL USERS
 export const getAllUsers = async () => {
   try {
     const req = await axios.get(`${BASE_URL}/admin/users`, {
@@ -114,7 +117,7 @@ export const getAllUsers = async () => {
   }
 };
 
-// ✅ Delete user
+// DELETE USER
 export const deleteUser = async (id) => {
   try {
     const req = await axios.delete(`${BASE_URL}/admin/users/${id}`, {
@@ -127,7 +130,7 @@ export const deleteUser = async (id) => {
   }
 };
 
-// Get single user
+// GET SINGLE USER
 export const getUserById = async (id) => {
   try {
     const req = await axios.get(`${BASE_URL}/admin/users/${id}`, {
@@ -140,7 +143,7 @@ export const getUserById = async (id) => {
   }
 };
 
-// Update user
+// UPDATE USER
 export const updateUser = async (id, payload) => {
   try {
     const req = await axios.put(`${BASE_URL}/admin/users/${id}`, payload, {
