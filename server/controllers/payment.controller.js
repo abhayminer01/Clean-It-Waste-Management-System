@@ -1,9 +1,10 @@
 require("dotenv").config();
 const Payment = require("../models/payment.model");
 const Stripe = require("stripe");
+const User = require("../models/user.model");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// CREATE PAYMENT
+// CREATE PAYMENT INTENT
 exports.createPaymentIntent = async (req, res) => {
   try {
     const { pickupid } = req.body;
@@ -25,12 +26,54 @@ exports.createPaymentIntent = async (req, res) => {
       pickup: pickupid,
       amount,
       stripePaymentIntentId: paymentIntent.id,
+      status: "pending",
     });
 
-    res.status(200).json({ success: true, clientSecret: paymentIntent.client_secret });
+    updateStatus(payment._id);
+
+    res.status(200).json({
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentId: payment._id,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Failed to create payment intent", err: error });
+  }
+};
+
+async function updateStatus(paymentId) {
+  try {
+    const payment = await Payment.findById(paymentId);
+    await payment.updateOne({ status : 'succeeded' });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+// UPDATE PAYMENT STATUS (after frontend confirms)
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { paymentIntentId } = req.body;
+
+    if (!paymentIntentId) {
+      return res.status(400).json({ success: false, message: "paymentIntentId is required" });
+    }
+
+    const payment = await Payment.findOne({ stripePaymentIntentId: paymentIntentId }).populate("pickup");
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    payment.status = "succeeded";
+    await payment.save();
+
+    res.status(200).json({ success: true, message: "Payment marked as succeeded", payment });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to update payment", err: error });
   }
 };
 
@@ -52,10 +95,12 @@ exports.confirmPayment = async (req, res) => {
   }
 };
 
-// GET ALL PAYMENT OF LOGGED IN USER
+// GET ALL PAYMENTS OF LOGGED IN USER WITH SEPARATE USER DATA
 exports.getUserPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ user: req.session.user.user_id }).populate("pickup");
+    const payments = await Payment.find({ user: req.session.user.user_id })
+      .populate("pickup").populate('user');
+
     res.status(200).json({ success: true, payments });
   } catch (error) {
     console.error(error);
@@ -63,16 +108,26 @@ exports.getUserPayments = async (req, res) => {
   }
 };
 
-// GET PAYMENT BY ID
 exports.getPaymentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const payment = await Payment.findById(id).populate("pickup");
-    if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
 
-    res.status(200).json({ success: true, payment });
+    // Find payment and populate pickup and user references
+    const payment = await Payment.findById(id)
+      .populate("pickup")
+      .populate("user");
+
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      payment,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Failed to fetch payment", err: error });
   }
 };
+

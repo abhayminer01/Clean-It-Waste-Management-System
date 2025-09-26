@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const paymentSchema = new mongoose.Schema({
   user: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", required: true 
+    ref: "User", 
+    required: true 
   },
   pickup: { 
     type: mongoose.Schema.Types.ObjectId, 

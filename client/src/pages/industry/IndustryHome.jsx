@@ -42,6 +42,9 @@ export default function IndustryHome() {
             <div onClick={() => navigate('/industry/pickup-history')} className='bg-green-500 px-10 py-10 rounded-lg hover:bg-green-600'>
               Pickup History
             </div>
+            <div onClick={() => navigate('/industry/payment-history')} className='bg-green-500 px-10 py-10 rounded-lg hover:bg-green-600'>
+              Payment History
+            </div>
           </div>
         </>
       }

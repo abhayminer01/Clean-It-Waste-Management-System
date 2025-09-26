@@ -90,3 +90,14 @@ export const deletePickup = async (id) => {
     return error.response?.data || { success: false, message: "Error deleting pickup" };
   }
 };
+
+// GET PAYMENTS OF LOGGED-IN USER
+export const getUserPayments = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/payment/user`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data || { success: false, message: "Error fetching payments" };
+  }
+};

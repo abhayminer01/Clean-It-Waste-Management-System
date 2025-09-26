@@ -53,3 +53,15 @@ export const getPaymentById = async (id) => {
     return error.response?.data || { success: false, message: "Error fetching payment" };
   }
 };
+
+
+// Update payment status (mark as succeeded)
+export const updatePaymentStatus = async (payload) => {
+  try {
+    const req = await axios.post(`${BASE_URL}/update-status`, payload, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.error(error);
+    return error.response?.data;
+  }
+};

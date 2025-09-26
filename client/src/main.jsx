@@ -14,6 +14,7 @@ import PickupHistory from './pages/household/PickupHistory';
 import ProfilePage from './pages/household/ProfilePage';
 import ScheduleIndustryPickup from './pages/industry/ScheduleIndustryPickup';
 import IndustrialPickupHistory from './pages/industry/IndustrialPickupHistory';
+import PaymentHistory from './pages/industry/PaymentHistory';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='industry/login' element = { <IndustryLogin /> } />
         <Route path='industry/schedule' element = { <ScheduleIndustryPickup /> } />
         <Route path='industry/pickup-history' element = { <IndustrialPickupHistory /> } />
+        <Route path='industry/payment-history' element = { <PaymentHistory /> } />
 
         <Route path='schedule' element = { <Schedule /> } />
         <Route path='pickup/history' element = { <PickupHistory /> } />

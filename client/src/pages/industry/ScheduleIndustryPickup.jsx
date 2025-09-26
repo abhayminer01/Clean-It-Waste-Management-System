@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { createIndustryPickup } from "../../services/user-api";
-import { createPaymentIntent } from "../../services/payment-api"; // ✅ use your API
+import { createPaymentIntent, updatePaymentStatus } from "../../services/payment-api";
 import { useNavigate } from "react-router-dom";
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-// Replace with your Stripe test publishable key
 const stripePromise = loadStripe("pk_test_51SBFxdJTRHwNE0gi29cxFK0OEjHvn40zQC1Rgtsb1WI9vnEQCqtxI7Uguas7CDmxGlMn582QqkaZFnbHGRhCxzH800sjqfxgsi");
 
-function CheckoutForm({ amount, onPaymentSuccess, pickupid }) {
+function CheckoutForm({ amount, onPaymentSuccess, pickupId }) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -21,30 +20,31 @@ function CheckoutForm({ amount, onPaymentSuccess, pickupid }) {
     setLoading(true);
 
     try {
-        // send both amount and pickupId
-        const res = await createPaymentIntent({ amount: 100, pickupid });
-        if (!res?.clientSecret) {
+      const res = await createPaymentIntent({ pickupid: pickupId });
+      if (!res?.clientSecret) {
         alert(res?.message || "Failed to create payment intent");
         return;
-        }
+      }
 
-        const result = await stripe.confirmCardPayment(res.clientSecret, {
+      const result = await stripe.confirmCardPayment(res.clientSecret, {
         payment_method: {
-            card: elements.getElement(CardElement),
+          card: elements.getElement(CardElement),
         },
-        });
+      });
 
-        if (result.error) {
+      if (result.error) {
         alert(result.error.message);
-        } else if (result.paymentIntent.status === "succeeded") {
+      } else if (result.paymentIntent.status === "succeeded") {
+        // ✅ Update backend payment status
+        await updatePaymentStatus({ paymentIntentId: result.paymentIntent.id });
         alert("Payment Successful!");
         onPaymentSuccess();
-        }
+      }
     } catch (err) {
-        console.error(err);
-        alert("Payment failed!");
+      console.error(err);
+      alert("Payment failed!");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -56,7 +56,7 @@ function CheckoutForm({ amount, onPaymentSuccess, pickupid }) {
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         disabled={!stripe || loading}
       >
-        {loading ? "Processing..." : `Pay ₹100.0 /-`}
+        {loading ? "Processing..." : `Pay ₹${amount / 100}`}
       </button>
     </form>
   );
@@ -68,28 +68,26 @@ export default function ScheduleIndustryPickup() {
   const [pickupDate, setPickupDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
   const [pickupCreated, setPickupCreated] = useState(false);
-  const [pickupAmount, setPickupAmount] = useState(500); // cents, e.g. $5
-  const [pickupId, setPickupId] = useState(0);
+  const [pickupAmount] = useState(10000); // paise (₹100)
+  const [pickupId, setPickupId] = useState(null);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const payload = { wasteType, pickupDate, timeSlot };
-  const res = await createIndustryPickup(payload);
+    const payload = { wasteType, pickupDate, timeSlot };
+    const res = await createIndustryPickup(payload);
 
-  if (res?.success) {
-    alert("Pickup Scheduled! Please proceed with payment.");
-
-    // Save pickup ID for payment
-    setPickupCreated(true);
-    setPickupId(res.pickup._id);
-  } else {
-    alert(res?.message || "Schedule Failed !");
-  }
-};
+    if (res?.success) {
+      alert("Pickup Scheduled! Please proceed with payment.");
+      setPickupCreated(true);
+      setPickupId(res.pickup._id);
+    } else {
+      alert(res?.message || "Schedule Failed !");
+    }
+  };
 
   const handlePaymentSuccess = () => {
-    navigate("/industry/pickup-history");
+    navigate("/industry/payment-history");
   };
 
   return (
@@ -152,7 +150,7 @@ export default function ScheduleIndustryPickup() {
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2">Payment</h2>
           <Elements stripe={stripePromise}>
-            <CheckoutForm amount={pickupAmount} onPaymentSuccess={handlePaymentSuccess} pickupid={pickupId} />
+            <CheckoutForm amount={pickupAmount} onPaymentSuccess={handlePaymentSuccess} pickupId={pickupId} />
           </Elements>
         </div>
       )}
