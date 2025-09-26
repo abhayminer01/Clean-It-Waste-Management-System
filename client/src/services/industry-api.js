@@ -101,3 +101,14 @@ export const getUserPayments = async () => {
     return error.response?.data || { success: false, message: "Error fetching payments" };
   }
 };
+
+// DATA FOR GENERATING PAYMENT INVIOCE
+export const getInvoiceData = async (paymentId) => {
+  try {
+    const req = await axios.post(`${BASE_URL}/payment/invoice`, { paymentId }, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data || { success: false, message: "Error fetching payments" };
+  }
+};

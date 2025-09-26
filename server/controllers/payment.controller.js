@@ -2,6 +2,8 @@ require("dotenv").config();
 const Payment = require("../models/payment.model");
 const Stripe = require("stripe");
 const User = require("../models/user.model");
+const Pickup = require("../models/pickup.model");
+const Industry = require("../models/industry.model");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CREATE PAYMENT INTENT
@@ -131,3 +133,21 @@ exports.getPaymentById = async (req, res) => {
   }
 };
 
+// CONTROLLER FOR PAYMENT INVOICE DATA
+exports.generateInvoiceData = async (req, res) => {
+  try {
+    const { paymentId } = req.body;
+    if(!paymentId) {
+      return res.status(400).json({ success : false, message : "Payment Id Required to generate invoice" });
+    }
+
+    const payment = await Payment.findById(paymentId);
+    const user = await Industry.findById(payment.user._id);
+    const pickup = await Pickup.findById(payment.pickup._id);
+
+    res.status(200).json({ success : true, message : "Data generated", payment : payment, user : user, pickup : pickup });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success : false, message : "error Occured", err : error });
+  }
+}

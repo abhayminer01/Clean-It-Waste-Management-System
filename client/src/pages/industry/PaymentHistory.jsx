@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserPayments } from "../../services/industry-api";
+import { getInvoiceData, getUserPayments } from "../../services/industry-api";
 import { generateInvoice } from "../../utils/generateInvoice";
 
 export default function PaymentHistory() {
@@ -16,6 +16,25 @@ export default function PaymentHistory() {
     };
     fetchPayments();
   }, []);
+
+ const handleInvoice = async (paymentId) => {
+  try {
+    const res = await getInvoiceData(paymentId); // fetch payment + user + pickup
+    if (res?.success) {
+      generateInvoice({
+        payment: res.payment,
+        user: res.user,
+        pickup: res.pickup,
+      });
+    } else {
+      alert(res.message || "Failed to generate invoice data");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Error generating invoice");
+  }
+};
+
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -52,12 +71,12 @@ export default function PaymentHistory() {
               </p>
 
               {/* Download Invoice Button */}
-                 <button
-                    onClick={() => generateInvoice(p._id)}
+                  <button
+                    onClick={() => handleInvoice(p._id)}
                     className="mt-3 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
+                  >
                     Download Invoice
-                </button>
+                  </button>
 
               {/* Related Pickup Details */}
               {p.pickup ? (

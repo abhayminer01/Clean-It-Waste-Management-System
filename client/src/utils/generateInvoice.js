@@ -1,80 +1,123 @@
 import jsPDF from "jspdf";
-import axios from "axios";
-const BASE_URL = "http://localhost:5000/api"; // Your backend URL
+import logo from "/withoutbg.png"; // ✅ Clean-It logo
 
-export async function generateInvoice(paymentId) {
-  try {
-    // Fetch payment from backend API
-    const res = await axios.get(`${BASE_URL}/payment/${paymentId}`, {
-      withCredentials: true,
-    });
+export function generateInvoice({ payment, user, pickup }) {
+  const doc = new jsPDF();
 
-    if (!res.data.success) {
-      alert(res.data.message || "Payment not found");
-      return;
+  // === HEADER ===
+  doc.addImage(logo, "PNG", 150, 8, 40, 40); // Logo top-right
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("INVOICE", 20, 20);
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.text("Clean-It Waste Management System", 20, 28);
+
+  // === Invoice Metadata ===
+  let y = 50;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("Invoice Details", 20, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  y += 10;
+  doc.text(`Invoice No: INV-${payment._id.slice(-6)}`, 20, y);
+  y += 7;
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y);
+
+  // Separator line
+  y += 5;
+  doc.setDrawColor(180);
+  doc.line(20, y, 190, y);
+  y += 12;
+
+  // === User Details ===
+  if (user) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Billed To", 20, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    y += 10;
+    if (user.industry_name)
+      doc.text(`Industry: ${user.industry_name}`, 20, y);
+    if (user.email) {
+      y += 7;
+      doc.text(`Email: ${user.email}`, 20, y);
+    }
+    if (user.address) {
+      y += 7;
+      doc.text(`Address: ${user.address}`, 20, y);
     }
 
-    const payment = res.data.payment;
-    const user = payment.user;
-
-    const doc = new jsPDF();
-    let y = 20;
-
-    doc.setFontSize(18);
-    doc.text("Payment Invoice", 20, y);
-    y += 12;
-
-    doc.setFontSize(12);
-
-    // --- User Details ---
-    if (user) {
-      doc.setFont(undefined, "bold");
-      doc.text("User Details:", 20, y);
-      doc.setFont(undefined, "normal");
-      y += 8;
-      if (user.full_name) doc.text(`Name: ${user.full_name}`, 20, y += 10);
-      if (user.email) doc.text(`Email: ${user.email}`, 20, y += 10);
-      if (user.phone) doc.text(`Phone: ${user.phone}`, 20, y += 10);
-
-      y += 5;
-      doc.line(20, y, 190, y);
-      y += 5;
-    }
-
-    // --- Payment Details ---
-    doc.setFont(undefined, "bold");
-    doc.text("Payment Details:", 20, y);
-    doc.setFont(undefined, "normal");
-    y += 8;
-    doc.text(`Payment ID: ${payment._id}`, 20, y += 10);
-    doc.text(`Status: ${payment.status}`, 20, y += 10);
-    doc.text(`Amount: ₹${(payment.amount / 100).toFixed(2)}`, 20, y += 10);
-    doc.text(`Stripe Intent ID: ${payment.stripePaymentIntentId}`, 20, y += 10);
-
-    y += 5;
+    // Separator
+    y += 10;
+    doc.setDrawColor(180);
     doc.line(20, y, 190, y);
-    y += 5;
-
-    // --- Pickup Details ---
-    if (payment.pickup) {
-      doc.setFont(undefined, "bold");
-      doc.text("Pickup Details:", 20, y);
-      doc.setFont(undefined, "normal");
-      y += 8;
-      if (payment.pickup.waste_type) doc.text(`Waste Type: ${payment.pickup.waste_type}`, 20, y += 10);
-      if (payment.pickup.sheduled_date)
-        doc.text(
-          `Date: ${new Date(payment.pickup.sheduled_date).toLocaleDateString()}`,
-          20,
-          y += 10
-        );
-      if (payment.pickup.scheduled_time)
-        doc.text(`Time Slot: ${payment.pickup.scheduled_time}`, 20, y += 10);
-    }
-
-    doc.save(`Invoice-${payment._id.slice(-6)}.pdf`);
-  } catch (error) {
-    console.error(error);
-    alert("Failed to generate invoice");
+    y += 12;
   }
+
+  // === Payment Summary ===
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("Payment Summary", 20, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  y += 10;
+  doc.text(`Payment ID: ${payment._id}`, 20, y);
+  y += 7;
+  doc.text(`Status: ${payment.status}`, 20, y);
+  y += 7;
+  doc.text(`Amount Paid: 100 /-`, 20, y);
+  y += 7;
+  doc.text(`Stripe Intent ID: ${payment.stripePaymentIntentId}`, 20, y);
+
+  // Separator
+  y += 10;
+  doc.setDrawColor(180);
+  doc.line(20, y, 190, y);
+  y += 12;
+
+  // === Pickup Details ===
+  if (pickup) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Pickup Details", 20, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    y += 10;
+    if (pickup.waste_type)
+      doc.text(`Waste Type: ${pickup.waste_type}`, 20, y);
+    if (pickup.sheduled_date) {
+      y += 7;
+      doc.text(
+        `Date: ${new Date(pickup.sheduled_date).toLocaleDateString()}`,
+        20,
+        y
+      );
+    }
+    if (pickup.scheduled_time) {
+      y += 7;
+      doc.text(`Time Slot: ${pickup.scheduled_time}`, 20, y);
+    }
+  }
+
+  // === FOOTER ===
+  y += 25;
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(10);
+  doc.text(
+    "Thank you for choosing Clean-It. Together, we keep our city clean & green!",
+    20,
+    y
+  );
+
+  // Save PDF
+  doc.save(`Invoice-${payment._id.slice(-6)}.pdf`);
 }
