@@ -56,7 +56,7 @@ function CheckoutForm({ amount, onPaymentSuccess, pickupid }) {
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         disabled={!stripe || loading}
       >
-        {loading ? "Processing..." : `Pay $${amount / 100}`}
+        {loading ? "Processing..." : `Pay ₹100.0 /-`}
       </button>
     </form>
   );

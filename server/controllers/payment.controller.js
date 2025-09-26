@@ -12,7 +12,7 @@ exports.createPaymentIntent = async (req, res) => {
       return res.status(400).json({ success: false, message: "pickupId is required" });
     }
 
-    const amount = 100;
+    const amount = 10000;
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
