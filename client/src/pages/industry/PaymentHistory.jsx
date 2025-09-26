@@ -10,116 +10,112 @@ export default function PaymentHistory() {
     const fetchPayments = async () => {
       setLoading(true);
       const res = await getUserPayments();
-      if (res?.success) setPayments(res.payments);
-      else alert(res?.message || "Failed to fetch payments");
+      if (res?.success) {
+        // Sort by newest first
+        const sorted = [...res.payments].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setPayments(sorted);
+      } else {
+        alert(res?.message || "Failed to fetch payments");
+      }
       setLoading(false);
     };
     fetchPayments();
   }, []);
 
- const handleInvoice = async (paymentId) => {
-  try {
-    const res = await getInvoiceData(paymentId); // fetch payment + user + pickup
-    if (res?.success) {
-      generateInvoice({
-        payment: res.payment,
-        user: res.user,
-        pickup: res.pickup,
-      });
-    } else {
-      alert(res.message || "Failed to generate invoice data");
+  const handleInvoice = async (paymentId) => {
+    try {
+      const res = await getInvoiceData(paymentId);
+      if (res?.success) {
+        generateInvoice({
+          payment: res.payment,
+          user: res.user,
+          pickup: res.pickup,
+        });
+      } else {
+        alert(res.message || "Failed to generate invoice data");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error generating invoice");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Error generating invoice");
-  }
-};
-
+  };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Your Payments</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        Payment History
+      </h1>
 
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-gray-600">Loading...</p>
       ) : payments.length === 0 ? (
-        <p>No payments found.</p>
+        <p className="text-gray-500">No payments found.</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {payments.map((p) => (
-            <div key={p._id} className="border rounded-xl shadow p-4 bg-white">
-              <h2 className="text-lg font-semibold mb-2">
-                Payment ID: {p._id.slice(-6)}
-              </h2>
-
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>Status:</strong>{" "}
+            <div
+              key={p._id}
+              className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-5 border border-gray-100"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  #{p._id.slice(-6)}
+                </h2>
                 <span
-                  className={`px-2 py-1 rounded text-white ${
-                    p.status === "succeeded" ? "bg-green-500" : "bg-yellow-500"
+                  className={`px-3 py-1 text-sm rounded-full font-medium ${
+                    p.status === "succeeded"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
                   {p.status}
                 </span>
+              </div>
+
+              {/* Amount */}
+              <p className="text-xl font-bold text-gray-900">
+                ₹{(p.amount / 100).toFixed(2)}
               </p>
 
-              <p className="mb-1">
-                <strong>Amount:</strong> ₹{(p.amount / 100).toFixed(2)}
-              </p>
-              <p className="mb-1">
-                <strong>Stripe Intent:</strong> {p.stripePaymentIntentId}
-              </p>
+              {/* ✅ Created Timestamp */}
+              {p.createdAt && (
+                <p className="text-xs text-gray-500 mb-3">
+                  {new Date(p.createdAt).toLocaleString()}
+                </p>
+              )}
 
-              {/* Download Invoice Button */}
-                  <button
-                    onClick={() => handleInvoice(p._id)}
-                    className="mt-3 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  >
-                    Download Invoice
-                  </button>
-
-              {/* Related Pickup Details */}
+              {/* Pickup Details */}
               {p.pickup ? (
-                <div className="mt-3 border-t pt-2">
-                  <h3 className="font-medium mb-1">Pickup Details</h3>
-                  <p className="text-sm">
-                    <strong>Waste Type:</strong> {p.pickup.waste_type}
+                <div className="text-sm text-gray-600 space-y-1 mb-4">
+                  <p>
+                    <span className="font-medium">Waste Type:</span>{" "}
+                    {p.pickup.waste_type}
                   </p>
-                  <p className="text-sm">
-                    <strong>Date:</strong>{" "}
+                  <p>
+                    <span className="font-medium">Date:</span>{" "}
                     {new Date(p.pickup.sheduled_date).toLocaleDateString()}
                   </p>
-                  <p className="text-sm">
-                    <strong>Time Slot:</strong> {p.pickup.scheduled_time}
+                  <p>
+                    <span className="font-medium">Time Slot:</span>{" "}
+                    {p.pickup.scheduled_time}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-red-500 mt-2">
+                <p className="text-sm text-red-500 mb-4">
                   Pickup details not available
                 </p>
               )}
 
-              {/* User Details */}
-              {p.user ? (
-                <div className="mt-3 border-t pt-2">
-                  <h3 className="font-medium mb-1">User Details</h3>
-                  <p className="text-sm">
-                    <strong>Name:</strong> {p.user.full_name}
-                  </p>
-                  <p className="text-sm">
-                    <strong>Email:</strong> {p.user.email}
-                  </p>
-                  {p.user.phone && (
-                    <p className="text-sm">
-                      <strong>Phone:</strong> {p.user.phone}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-red-500 mt-2">
-                  User details not available
-                </p>
-              )}
+              {/* Invoice Button */}
+              <button
+                onClick={() => handleInvoice(p._id)}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+              >
+                Download Invoice
+              </button>
             </div>
           ))}
         </div>
