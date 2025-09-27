@@ -17,6 +17,10 @@ import IndustrialPickupHistory from './pages/industry/IndustrialPickupHistory';
 import PaymentHistory from './pages/industry/PaymentHistory';
 import EcoLogin from './pages/ecoagent/EcoLogin';
 import Dashboard from './pages/ecoagent/Dashboard';
+import NewPickups from './pages/ecoagent/NewPickups';
+import PickupDetails from './pages/ecoagent/PickupDetails';
+import EcoPickupHistory from './pages/ecoagent/EcoPickupHistory';
+import AcceptedPickups from './pages/ecoagent/AcceptedPickups';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -40,6 +44,10 @@ createRoot(document.getElementById('root')).render(
 
         <Route path='ecoagent/login' element = { <EcoLogin /> } />
         <Route path='ecoagent/dashboard' element = { <Dashboard /> } />
+        <Route path='ecoagent/pickups/new' element = { <NewPickups /> } />
+        <Route path='ecoagent/pickups/:id' element = { <PickupDetails /> } />
+        <Route path='ecoagent/pickups/history' element = { <EcoPickupHistory /> } />
+        <Route path='ecoagent/pickups/accepted' element = { <AcceptedPickups /> } />
 
       </Routes>
     </Router>

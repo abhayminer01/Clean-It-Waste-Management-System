@@ -1,6 +1,8 @@
 
 const bcrypt = require("bcrypt");
 const EcoAgent = require("../models/ecoagent.model");
+const User = require("../models/user.model");
+const Pickup = require("../models/pickup.model");
 
 
 // ECO AGENT LOGIN
@@ -43,4 +45,79 @@ const agentLogin = async (req, res) => {
   }
 };
 
-module.exports = { agentLogin };
+// GET NEW PICKUPS FOR ECO AGENT
+const getNewPickupsForAgent = async (req, res) => {
+  try {
+    const agent = req.user;
+    if (!agent) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const users = await User.find({
+      district: agent.district,
+      localbody_name: agent.localbody_name,
+      localbody_type: agent.localbody_type,
+    }).select("_id");
+
+    const userIds = users.map((u) => u._id);
+
+    const pickups = await Pickup.find({
+      user: { $in: userIds },
+      status: "pending",
+    })
+      .populate("user", "full_name address mobile_number")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, pickups });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch pickups", error });
+  }
+};
+
+// PATCH /pickup/:id/accept
+const acceptPickup = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // get logged in eco agent from session
+    if (!req.session?.agent || !req.session.agent.agent_id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized: No agent logged in" });
+    }
+
+    const agentId = req.session.agent.agent_id;
+
+    const pickup = await Pickup.findById(id);
+    if (!pickup)
+      return res
+        .status(404)
+        .json({ success: false, message: "Pickup not found" });
+
+    // Only pending pickups can be accepted
+    if (pickup.status !== "pending")
+      return res.status(400).json({
+        success: false,
+        message: "Pickup is already accepted or picked",
+      });
+
+    pickup.status = "accepted";
+    pickup.agent = agentId; // assign agent ID
+    await pickup.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Pickup accepted successfully",
+      pickup,
+    });
+  } catch (error) {
+    console.error("Error in acceptPickup:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to accept pickup",
+      error: error.message,
+    });
+  }
+};
+
+
+module.exports = { agentLogin, getNewPickupsForAgent, acceptPickup };

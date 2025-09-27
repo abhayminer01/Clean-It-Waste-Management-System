@@ -30,6 +30,10 @@ const pickupSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment"
     },
+    agent : {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'EcoAgent'
+    }
   },
   { timestamps: true }
 );
