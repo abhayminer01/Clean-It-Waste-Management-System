@@ -4,11 +4,10 @@ const EcoAgent = require("../models/ecoagent.model");
 const User = require("../models/user.model");
 const Pickup = require("../models/pickup.model");
 
-
 // ECO AGENT LOGIN
 const agentLogin = async (req, res) => {
   try {
-    const { id, password } = req.body;
+    const { id, password, lat, lng } = req.body;
 
     if (!id || !password) {
       return res.status(400).json({ success: false, message: "All fields are required!" });
@@ -26,7 +25,13 @@ const agentLogin = async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid credentials!" });
     }
 
-    req.session.agent = { agent_id : agent._id };
+    // Update location if provided
+    if (typeof lat === "number" && typeof lng === "number") {
+      agent.location_coords = { lat, lng };
+      await agent.save();
+    }
+
+    req.session.agent = { agent_id: agent._id };
 
     return res.json({
       success: true,
@@ -37,6 +42,7 @@ const agentLogin = async (req, res) => {
         district: agent.district,
         localbody_type: agent.localbody_type,
         localbody_name: agent.localbody_name,
+        location_coords: agent.location_coords,
       },
     });
   } catch (error) {
@@ -131,8 +137,8 @@ const getAcceptedPickups = async (req, res) => {
     const agentId = req.session.agent.agent_id;
 
     const pickups = await Pickup.find({ agent: agentId, status: "accepted" })
-      .populate("user", "full_name email") // include user info
-      .populate("payment", "status amount"); // include payment if exists
+      .populate("user", "full_name email location_coords")
+      .populate("payment", "status amount");
 
     res.status(200).json({
       success: true,

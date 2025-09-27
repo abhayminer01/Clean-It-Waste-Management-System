@@ -10,18 +10,23 @@ export default function EcoLogin() {
         e.preventDefault();
         const id = e.target.id.value;
         const password = e.target.password.value;
-        const payload = {
-            id : id,
-            password : password
-        }
 
-        const res = await agentLogin(payload);
-        if(res.success) {
-            alert('Login Successfull !');
-            navigate('/ecoagent/dashboard');
-        } else {
-            alert(`${res.message || "something happened"}`);
-        }
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const payload = {
+                id: id,
+                password: password,
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            };
+
+            const res = await agentLogin(payload);
+            if(res.success) {
+                alert('Login Successfull !');
+                navigate('/ecoagent/dashboard');
+            } else {
+                alert(`${res.message || "something happened"}`);
+            }
+        });
     }
   return (
     <div>

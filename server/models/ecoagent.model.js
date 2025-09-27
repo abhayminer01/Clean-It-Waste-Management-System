@@ -15,6 +15,10 @@ const ecoAgentSchema = new mongoose.Schema({
     },
     localbody_name : {
         type : String
+    },
+    location_coords : {
+        lat : Number,
+        lng : Number
     }
 }, { timestamps : true });
 
