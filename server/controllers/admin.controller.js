@@ -4,6 +4,8 @@ const Pickup = require("../models/pickup.model");
 const User = require("../models/user.model");
 const EcoAgent = require('../models/ecoagent.model');
 
+const bcrypt = require('bcrypt');
+
 // ADMIN LOGIN
 const adminLogin = async (req, res) => {
     try {
@@ -295,9 +297,11 @@ const createEcoAgent = async (req, res) => {
       return res.status(400).json({ success : false, message : "All Fields are mandatory" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
     const agent = await EcoAgent.create({
       full_name : fullname,
-      password,
+      password : hashedPassword,
       district,
       localbody_name,
       localbody_type
