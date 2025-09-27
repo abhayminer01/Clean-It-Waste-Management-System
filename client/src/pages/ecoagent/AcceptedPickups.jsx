@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAcceptedPickups, markPickupAsPicked } from "../../services/ecoagent-api";
+import { useNavigate } from "react-router-dom";
 
 export default function AcceptedPickups() {
   const [pickups, setPickups] = useState([]);
@@ -19,12 +20,14 @@ export default function AcceptedPickups() {
     fetchAcceptedPickups();
   }, []);
 
+  const navigate = useNavigate();
+
   const handleMarkPicked = async (pickupId) => {
     const res = await markPickupAsPicked(pickupId);
     if (res?.success) {
-      alert("Pickup marked as picked!");
-      setSelectedPickup(null);
-      fetchAcceptedPickups();
+        setSelectedPickup(null); // close modal
+        alert("Pickup marked as picked!");
+        navigate(`/ecoagent/rating/${pickupId}`);
     } else {
       alert(res.message || "Failed to update pickup");
     }

@@ -193,5 +193,4 @@ const markPickupAsPicked = async (req, res) => {
   }
 };
 
-
 module.exports = { agentLogin, getNewPickupsForAgent, acceptPickup, getAcceptedPickups, markPickupAsPicked };
