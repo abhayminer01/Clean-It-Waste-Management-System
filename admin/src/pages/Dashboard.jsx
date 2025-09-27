@@ -11,6 +11,7 @@ export default function Dashboard() {
         <div onClick={() => navigate('/industry/manage')}  className='bg-green-500 py-10 px-5 rounded-2xl hover:bg-green-600'>Manage Industrial Users</div>
         <div onClick={() => navigate('/pickup/schedules')}  className='bg-green-500 py-10 px-5 rounded-2xl hover:bg-green-600'>Manage Pickups Schedules</div>
         <div onClick={() => navigate('/users/manage')}  className='bg-green-500 py-10 px-5 rounded-2xl hover:bg-green-600'>Manage Users</div>
+        <div onClick={() => navigate('/ecoagent/manage')}  className='bg-green-500 py-10 px-5 rounded-2xl hover:bg-green-600'>Manage Eco Agents</div>
       </div>
     </div>
   )

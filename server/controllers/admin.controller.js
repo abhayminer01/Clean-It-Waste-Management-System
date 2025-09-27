@@ -2,6 +2,7 @@ const Admin = require("../models/admin.model");
 const Industry = require("../models/industry.model");
 const Pickup = require("../models/pickup.model");
 const User = require("../models/user.model");
+const EcoAgent = require('../models/ecoagent.model');
 
 // ADMIN LOGIN
 const adminLogin = async (req, res) => {
@@ -285,6 +286,35 @@ const updateUser = async (req, res) => {
   }
 };
 
+
+const createEcoAgent = async (req, res) => {
+  try {
+    const { fullname, password, district, localbody_type, localbody_name } = req.body;
+
+    if(!fullname || !password || !district || !localbody_type || !localbody_name) {
+      return res.status(400).json({ success : false, message : "All Fields are mandatory" });
+    }
+
+    const agent = await EcoAgent.create({
+      full_name : fullname,
+      password,
+      district,
+      localbody_name,
+      localbody_type
+    });
+
+    const id = agent._id.toString().slice(-6);
+    res.status(200).json({ success : true, message : "Agent Created successfully", data : { id : id } });
+  } catch (error) {
+    console.error("Error creating agent :", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error while creating agent",
+      err: error.message,
+    });
+  }
+}
+
 module.exports = {
     adminLogin,
     getNewIndustry,
@@ -296,5 +326,6 @@ module.exports = {
     getAllUsers,
     deleteUser,
     getUserById,
-    updateUser
+    updateUser,
+    createEcoAgent
 }

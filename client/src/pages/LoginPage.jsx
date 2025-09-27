@@ -93,6 +93,15 @@ export default function LoginPage() {
             Click here
           </span>
         </p>
+        <p>
+          Eco Agent ?{" "}
+          <span
+            className="text-green-600 cursor-pointer"
+            onClick={() => navigate("/ecoagent/login")}
+          >
+            Click here
+          </span>
+        </p>
         <input
           className="bg-green-500 px-10 py-1 rounded-lg"
           type="submit"

@@ -19,4 +19,7 @@ router.delete("/users/:id", adminController.deleteUser);
 router.get("/users/:id", adminController.getUserById);
 router.put("/users/:id", adminController.updateUser);
 
+// ECO AGENT
+router.post('/ecoagent/create', adminController.createEcoAgent);
+
 module.exports = router;

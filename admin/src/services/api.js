@@ -155,3 +155,16 @@ export const updateUser = async (id, payload) => {
     return error.response?.data;
   }
 };
+
+// CREATE ECO AGENT
+export const createAgent = async (payload) => {
+  try {
+    const req = await axios.post(`${BASE_URL}/admin/ecoagent/create`, payload, {
+      withCredentials: true,
+    });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};

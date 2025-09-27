@@ -9,6 +9,8 @@ import ManageIndustry from './pages/ManageIndustry';
 import ManagePickups from './pages/ManagePickups';
 import ManageUsers from './pages/ManageUsers';
 import UserDeatails from './pages/UserDeatails';
+import ManageEcoagent from './pages/ManageEcoagent';
+import CreateEcoAgent from './pages/CreateEcoAgent';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -21,6 +23,8 @@ createRoot(document.getElementById('root')).render(
         <Route path='pickup/schedules' element = { <ManagePickups /> } />
         <Route path='users/manage' element = { <ManageUsers /> } />
         <Route path='users/:id' element={<UserDeatails />} /> 
+        <Route path='ecoagent/manage' element={<ManageEcoagent />} /> 
+        <Route path='ecoagent/create' element={<CreateEcoAgent />} /> 
       </Routes>
     </Router>
   </StrictMode>
