@@ -11,7 +11,7 @@ export default function RatingPage() {
     cleanliness: 0,
     timingCompliance: 0,
     hazardousHandling: 0,
-    overallSatisfaction: 0
+    overallSatisfaction: 0,
   });
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function RatingPage() {
   }, [id]);
 
   const handleChange = (field, value) => {
-    setScores(prev => ({ ...prev, [field]: Number(value) }));
+    setScores((prev) => ({ ...prev, [field]: Number(value) }));
   };
 
   const handleSubmit = async () => {
@@ -38,7 +38,9 @@ export default function RatingPage() {
         scores,
         { withCredentials: true }
       );
-      if (res.data.success) alert(`Rating submitted! Total Score: ${res.data.rating.totalScore}/100`);
+      if (res.data.success) {
+        alert(`Rating submitted! Total Score: ${res.data.rating.totalScore}/100`);
+      }
     } catch (err) {
       console.error(err);
       alert("Error submitting rating");
@@ -48,25 +50,38 @@ export default function RatingPage() {
   if (loading) return <p>Loading pickup...</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-6 max-w-3xl mx-auto space-y-6">
+      {/* Pickup & User Details */}
       {pickup && (
-        <div className="mb-6 bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-bold">{pickup.user?.full_name}</h2>
-          <p>Waste Type: {pickup.waste_type}</p>
-          <p>Date: {pickup.sheduled_date}</p>
-          <p>Time: {pickup.scheduled_time}</p>
-          <p>Pickup Type: {pickup.pickup_type}</p>
+        <div className="bg-white p-6 rounded-lg shadow space-y-2">
+          <h2 className="text-xl font-bold mb-2">Pickup Details</h2>
+          <p><span className="font-medium">User:</span> {pickup.user?.full_name}</p>
+          <p><span className="font-medium">Email:</span> {pickup.user?.email || "N/A"}</p>
+          <p><span className="font-medium">Mobile:</span> {pickup.user?.mobile_number || "N/A"}</p>
+          <p><span className="font-medium">Address:</span> {pickup.user?.address || "N/A"}</p>
+          <p><span className="font-medium">District / Local Body:</span> {pickup.user?.district} / {pickup.user?.localbody_name}</p>
+          <p><span className="font-medium">Waste Type:</span> {pickup.waste_type}</p>
+          <p><span className="font-medium">Pickup Type:</span> {pickup.pickup_type}</p>
+          <p><span className="font-medium">Scheduled Date:</span> {pickup.sheduled_date}</p>
+          <p><span className="font-medium">Scheduled Time:</span> {pickup.scheduled_time}</p>
+          {pickup.payment && (
+            <p>
+              <span className="font-medium">Payment:</span> {pickup.payment.status} (₹{pickup.payment.amount})
+            </p>
+          )}
         </div>
       )}
 
+      {/* Rating Form */}
       <div className="bg-white p-6 rounded-lg shadow space-y-4">
+        <h2 className="text-xl font-bold mb-2">Rate This Pickup</h2>
         {[
           { key: "correctSegregation", label: "Correct Waste Type & Segregation" },
           { key: "cleanliness", label: "Cleanliness & Packaging" },
           { key: "timingCompliance", label: "Pickup Timing Compliance" },
           { key: "hazardousHandling", label: "Hazardous/Recyclable Material Handling" },
           { key: "overallSatisfaction", label: "Overall Pickup Satisfaction" },
-        ].map(q => (
+        ].map((q) => (
           <div key={q.key}>
             <p className="font-medium">{q.label}</p>
             <input

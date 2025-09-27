@@ -7,5 +7,6 @@ router.post('/create-industry', industryAuthMiddleware, pickupController.createI
 router.get("/", userAuthMiddleware, pickupController.getUserPickups);
 router.delete("/:id", userAuthMiddleware, pickupController.deletePickup);
 router.put("/:id", userAuthMiddleware, pickupController.updatePickup);
+router.get("/:id", pickupController.getPickupById);
 
 module.exports = router;

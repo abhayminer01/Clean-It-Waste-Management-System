@@ -49,9 +49,14 @@ export default function PickupHistory() {
     return <p className="text-center mt-10 text-gray-600">No pickups found.</p>;
   }
 
+  // Separate picked pickups and active pickups
+  const pickedPickups = pickups.filter((p) => p.status === "picked");
+  const activePickups = pickups.filter((p) => p.status !== "picked");
+
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {pickups.map((pickup) => (
+      {/* Active Pickups */}
+      {activePickups.map((pickup) => (
         <div key={pickup._id} className="bg-white shadow-lg rounded-2xl p-6 border">
           {editing === pickup._id ? (
             <>
@@ -133,6 +138,31 @@ export default function PickupHistory() {
           )}
         </div>
       ))}
+
+      {/* Picked Pickups Section */}
+      {pickedPickups.length > 0 && (
+        <div className="col-span-full mt-8">
+          <h2 className="text-xl font-bold mb-4 text-gray-700">Picked Pickups</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pickedPickups.map((pickup) => (
+              <div key={pickup._id} className="bg-gray-100 shadow-lg rounded-2xl p-6 border opacity-60 cursor-not-allowed">
+                <h2 className="text-xl font-bold text-gray-600 mb-2">{pickup.waste_type}</h2>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Date:</span> {pickup.sheduled_date}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Time:</span> {pickup.scheduled_time}
+                </p>
+                <p className="text-sm text-green-600 mt-2">Status: {pickup.status}</p>
+                <div className="mt-4 flex justify-between">
+                  <button disabled className="bg-blue-400 text-white px-4 py-1 rounded-lg cursor-not-allowed">Edit</button>
+                  <button disabled className="bg-red-400 text-white px-4 py-1 rounded-lg cursor-not-allowed">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

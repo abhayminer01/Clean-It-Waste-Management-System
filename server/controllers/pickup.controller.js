@@ -147,6 +147,24 @@ const deleteIndustryPickup = async (req, res) => {
   }
 };
 
+// GET SINGLE PICKUP BY ID (for logged-in user)
+const getPickupById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pickup = await Pickup.findOne({ _id: id }).populate('payment');
+
+    if (!pickup) {
+      return res.status(404).json({ success: false, message: "Pickup not found" });
+    }
+
+    res.status(200).json({ success: true, data: pickup });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error fetching pickup", err: error });
+  }
+};
+
+
 module.exports = {
     createPickup,
     createIndustryPickup,
@@ -155,5 +173,6 @@ module.exports = {
     updatePickup,
     getIndustryUserPickups,
     updateIndustryPickup,
-    deleteIndustryPickup
+    deleteIndustryPickup,
+    getPickupById
 }
