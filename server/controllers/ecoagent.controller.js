@@ -119,5 +119,79 @@ const acceptPickup = async (req, res) => {
   }
 };
 
+// GET /ecoagent/pickups/accepted
+const getAcceptedPickups = async (req, res) => {
+  try {
+    if (!req.session?.agent || !req.session.agent.agent_id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized: No agent logged in" });
+    }
 
-module.exports = { agentLogin, getNewPickupsForAgent, acceptPickup };
+    const agentId = req.session.agent.agent_id;
+
+    const pickups = await Pickup.find({ agent: agentId, status: "accepted" })
+      .populate("user", "full_name email") // include user info
+      .populate("payment", "status amount"); // include payment if exists
+
+    res.status(200).json({
+      success: true,
+      message: "Accepted pickups fetched successfully",
+      data: pickups,
+    });
+  } catch (error) {
+    console.error("Error fetching accepted pickups:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch accepted pickups",
+      error: error.message,
+    });
+  }
+};
+
+// PATCH /ecoagent/pickups/:id/picked
+const markPickupAsPicked = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.session?.agent?.agent_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const pickup = await Pickup.findById(id);
+    if (!pickup) {
+      return res.status(404).json({ success: false, message: "Pickup not found" });
+    }
+
+    if (pickup.status !== "accepted") {
+      return res.status(400).json({
+        success: false,
+        message: "Only accepted pickups can be marked as picked",
+      });
+    }
+
+    // verify agent owns this pickup
+    if (pickup.agent.toString() !== req.session.agent.agent_id) {
+      return res.status(403).json({ success: false, message: "Not your pickup" });
+    }
+
+    pickup.status = "picked";
+    await pickup.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Pickup marked as picked",
+      data: pickup,
+    });
+  } catch (error) {
+    console.error("Error marking pickup as picked:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update pickup status",
+      error: error.message,
+    });
+  }
+};
+
+
+module.exports = { agentLogin, getNewPickupsForAgent, acceptPickup, getAcceptedPickups, markPickupAsPicked };
