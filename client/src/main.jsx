@@ -16,6 +16,7 @@ import ScheduleIndustryPickup from './pages/industry/ScheduleIndustryPickup';
 import IndustrialPickupHistory from './pages/industry/IndustrialPickupHistory';
 import PaymentHistory from './pages/industry/PaymentHistory';
 import EcoLogin from './pages/ecoagent/EcoLogin';
+import Dashboard from './pages/ecoagent/Dashboard';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='pickup/history' element = { <PickupHistory /> } />
 
         <Route path='ecoagent/login' element = { <EcoLogin /> } />
+        <Route path='ecoagent/dashboard' element = { <Dashboard /> } />
 
       </Routes>
     </Router>
