@@ -1,8 +1,8 @@
 // routes/rating.routes.js
-const express = require('express');
-const router = express.Router();
-const { submitRating } = require('../controllers/rating.controller');
+const router = require("express").Router();
+const { userAuthMiddleware } = require("../middlewares/auth.middleware");
+const { submitRating } = require("../controllers/rating.controller");
 
-router.post('/:pickupId', submitRating);
+router.post("/:id", userAuthMiddleware, submitRating);
 
 module.exports = router;

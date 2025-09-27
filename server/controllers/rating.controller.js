@@ -1,34 +1,39 @@
 // controllers/rating.controller.js
-const Rating = require("../models/rating.model");
 const Pickup = require("../models/pickup.model");
+const EcoCoin = require("../models/ecoCoin.model");
+const calculateCoins = require("../utils/calculateCoins");
 
 const submitRating = async (req, res) => {
   try {
-    const { pickupId } = req.params;
-    const {
-      correctSegregation,
-      cleanliness,
-      timingCompliance,
-      hazardousHandling,
-      overallSatisfaction
-    } = req.body;
+    const { id } = req.params; // pickup id
+    const { correctSegregation, cleanliness, timingCompliance, hazardousHandling, overallSatisfaction } = req.body;
 
-    // Ensure all fields are present
-    if ([correctSegregation, cleanliness, timingCompliance, hazardousHandling, overallSatisfaction].some(v => v == null))
-      return res.status(400).json({ success: false, message: "All ratings are required" });
+    // Fetch pickup
+    const pickup = await Pickup.findById(id).populate("user").populate("payment");
+    if (!pickup) return res.status(404).json({ success: false, message: "Pickup not found" });
 
-    // Calculate total score out of 100
-    const totalScore = Math.round(
-      (correctSegregation + cleanliness + timingCompliance + hazardousHandling + overallSatisfaction) * 4
+    // Total score out of 100
+    const totalScore = Math.floor(
+      (correctSegregation + cleanliness + timingCompliance + hazardousHandling + overallSatisfaction) * 20
     );
 
-    const rating = await Rating.create({
-      pickup: pickupId,
-      scores: { correctSegregation, cleanliness, timingCompliance, hazardousHandling, overallSatisfaction },
-      totalScore
-    });
+    // Credit Eco Coins only for household user and unpaid pickup
+    if (pickup.pickup_type !== "industrial" && !pickup.payment) {
+      const coins = calculateCoins(totalScore);
 
-    res.status(200).json({ success: true, message: "Rating submitted successfully", rating });
+      // Save eco coin record
+      await EcoCoin.create({
+        user: pickup.user._id,
+        pickup: pickup._id,
+        coins
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Rating submitted successfully",
+      rating: { totalScore }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Error submitting rating", err });
