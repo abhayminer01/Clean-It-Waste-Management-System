@@ -286,7 +286,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-
+// CREATE ECO AGENT
 const createEcoAgent = async (req, res) => {
   try {
     const { fullname, password, district, localbody_type, localbody_name } = req.body;
@@ -315,6 +315,65 @@ const createEcoAgent = async (req, res) => {
   }
 }
 
+// GET ECO AGENT
+const getAllEcoAgents = async (req, res) => {
+  try {
+    const agents = await EcoAgent.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: agents });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching agents", err: error.message });
+  }
+};
+
+// DELETE ECO AGENT
+const deleteEcoAgent = async (req, res) => {
+  try {
+    await EcoAgent.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: "Agent deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error deleting agent", err: error.message });
+  }
+};
+
+// UPDATE ECO AGENT
+const updateEcoAgent = async (req, res) => {
+  try {
+    const { fullname, district, localbody_type, localbody_name } = req.body;
+
+    if (!fullname || !district || !localbody_type || !localbody_name) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    const agent = await EcoAgent.findByIdAndUpdate(
+      req.params.id,
+      {
+        full_name: fullname,
+        district,
+        localbody_type,
+        localbody_name,
+      },
+      { new: true }
+    );
+
+    if (!agent) {
+      return res.status(404).json({ success: false, message: "Agent not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Agent updated successfully",
+      data: agent,
+    });
+  } catch (error) {
+    console.error("Error updating eco agent:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error updating agent",
+      err: error.message,
+    });
+  }
+};
+
 module.exports = {
     adminLogin,
     getNewIndustry,
@@ -327,5 +386,8 @@ module.exports = {
     deleteUser,
     getUserById,
     updateUser,
-    createEcoAgent
+    createEcoAgent,
+    getAllEcoAgents,
+    deleteEcoAgent,
+    updateEcoAgent
 }

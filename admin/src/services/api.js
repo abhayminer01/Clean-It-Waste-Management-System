@@ -168,3 +168,35 @@ export const createAgent = async (payload) => {
     return error.response?.data;
   }
 };
+
+// Fetch all eco agents
+export const getAllEcoAgents = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/admin/ecoagent/all`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+// Delete eco agent
+export const deleteEcoAgent = async (id) => {
+  try {
+    const req = await axios.delete(`${BASE_URL}/admin/ecoagent/${id}`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data;
+  }
+};
+
+
+export const updateEcoAgent = async (id, payload) => {
+  try {
+    const res = await axios.put(`${BASE_URL}/admin/ecoagent/${id}`, payload, { withCredentials: true });
+    return res.data;
+  } catch (err) {
+    return err.response?.data;
+  }
+};
