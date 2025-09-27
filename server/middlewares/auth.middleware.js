@@ -1,3 +1,4 @@
+const EcoAgent = require("../models/ecoagent.model");
 const Industry = require("../models/industry.model");
 const User = require("../models/user.model");
 
@@ -32,7 +33,23 @@ const industryAuthMiddleware = async (req, res, next) => {
     }
 }
 
+
+const ecoagentAuthMiddleware = async (req, res, next) => {
+    try {
+        if(!req.session.agent) {
+            return res.status(400).json({ success : false, message : "You need to be logged in" });
+        }
+
+        const user = await EcoAgent.findById(req.session.agent.agent_id);
+        req.user = user;
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success : false, message : "Error occured on auth middleware", err : error });
+    }
+}
 module.exports = {
     userAuthMiddleware,
-    industryAuthMiddleware
+    industryAuthMiddleware,
+    ecoagentAuthMiddleware
 }
