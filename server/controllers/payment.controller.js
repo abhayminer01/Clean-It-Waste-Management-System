@@ -47,55 +47,14 @@ exports.createPaymentIntent = async (req, res) => {
 async function updateStatus(paymentId) {
   try {
     const payment = await Payment.findById(paymentId);
+    const pickup = await Pickup.findById(payment.pickup._id);
+
     await payment.updateOne({ status : 'succeeded' });
+    await pickup.updateOne({ payment : paymentId });
   } catch (error) {
     console.log(error);
   }
 }
-
-
-
-// UPDATE PAYMENT STATUS (after frontend confirms)
-exports.updatePaymentStatus = async (req, res) => {
-  try {
-    const { paymentIntentId } = req.body;
-
-    if (!paymentIntentId) {
-      return res.status(400).json({ success: false, message: "paymentIntentId is required" });
-    }
-
-    const payment = await Payment.findOne({ stripePaymentIntentId: paymentIntentId }).populate("pickup");
-    if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found" });
-    }
-
-    payment.status = "succeeded";
-    await payment.save();
-
-    res.status(200).json({ success: true, message: "Payment marked as succeeded", payment });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Failed to update payment", err: error });
-  }
-};
-
-
-// CONFIRM PAYMENT (OPTIONAL)
-exports.confirmPayment = async (req, res) => {
-  try {
-    const { paymentId } = req.params;
-    const payment = await Payment.findById(paymentId);
-    if (!payment) return res.status(404).json({ success: false, message: "Payment not found" });
-
-    payment.status = "succeeded";
-    await payment.save();
-
-    res.status(200).json({ success: true, message: "Payment confirmed", payment });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Failed to confirm payment", err: error });
-  }
-};
 
 // GET ALL PAYMENTS OF LOGGED IN USER WITH SEPARATE USER DATA
 exports.getUserPayments = async (req, res) => {

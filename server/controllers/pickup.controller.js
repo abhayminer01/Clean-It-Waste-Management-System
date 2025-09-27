@@ -103,7 +103,7 @@ const createIndustryPickup = async (req, res) => {
 // GET ALL PICKUP FOR LOGGED IN INDUSTRIAL USERS
 const getIndustryUserPickups = async (req, res) => {
   try {
-    const pickups = await Pickup.find({ user: req.user._id }).sort({ sheduled_date: -1 });
+    const pickups = await Pickup.find({ user: req.user._id }).populate('payment').sort({ sheduled_date: -1 });
     res.status(200).json({ success: true, pickups });
   } catch (error) {
     console.error(error);
