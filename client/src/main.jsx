@@ -22,6 +22,7 @@ import PickupDetails from './pages/ecoagent/PickupDetails';
 import EcoPickupHistory from './pages/ecoagent/EcoPickupHistory';
 import AcceptedPickups from './pages/ecoagent/AcceptedPickups';
 import RatingPage from './pages/ecoagent/RatingPage';
+import IndustryProfile from './pages/industry/IndustryProfile';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='industry/schedule' element = { <ScheduleIndustryPickup /> } />
         <Route path='industry/pickup-history' element = { <IndustrialPickupHistory /> } />
         <Route path='industry/payment-history' element = { <PaymentHistory /> } />
+        <Route path='industry/profile' element = { <IndustryProfile /> } />
 
         <Route path='schedule' element = { <Schedule /> } />
         <Route path='pickup/history' element = { <PickupHistory /> } />

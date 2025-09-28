@@ -113,6 +113,7 @@ const getIndustryUserPickups = async (req, res) => {
 
 // UPDATE PICKUP (INDUSTRIAL USER)
 const updateIndustryPickup = async (req, res) => {
+  console.log("ping");
   try {
     const { id } = req.params;
     const { waste_type, sheduled_date, scheduled_time } = req.body;

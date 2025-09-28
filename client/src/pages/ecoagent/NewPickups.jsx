@@ -123,7 +123,7 @@ export default function NewPickups() {
 
   const getUserPhone = (user) => {
     if (!user) return "N/A";
-    return user.mobile_number || user.phone || "N/A";
+    return user.mobile_number || user.contact || "N/A";
   };
 
   if (loading) {

@@ -112,3 +112,36 @@ export const getInvoiceData = async (paymentId) => {
     return error.response?.data || { success: false, message: "Error fetching payments" };
   }
 };
+
+// PROFILE - GET
+export const getIndustryProfile = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/industry/profile`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data || { success: false, message: "Error fetching profile" };
+  }
+};
+
+// PROFILE - UPDATE
+export const updateIndustryProfile = async (payload) => {
+  try {
+    const req = await axios.put(`${BASE_URL}/industry/profile`, payload, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data || { success: false, message: "Error updating profile" };
+  }
+};
+
+// PROFILE - DELETE
+export const logoutIndustry = async () => {
+  try {
+    const req = await axios.get(`${BASE_URL}/industry/profile/logout`, { withCredentials: true });
+    return req.data;
+  } catch (error) {
+    console.log(error);
+    return error.response?.data || { success: false, message: "Error deleting account" };
+  }
+};

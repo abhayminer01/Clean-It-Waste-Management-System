@@ -132,7 +132,7 @@ const getNewIndustrialPickups = async (req, res) => {
 
         const payment = await Payment.findById(pickup.payment).populate({
           path: "user",
-          select: "name email licence address district localbody_type localbody_name location_coords",
+          select: "industry_name contact email licence address district localbody_type localbody_name location_coords",
           model: Industry,
         });
 
@@ -249,7 +249,7 @@ const getAcceptedPickups = async (req, res) => {
     // Fetch industrial user details
     const industrialUsers = await Industry.find({
       _id: { $in: industrialUserIds }
-    }).select("_id industry_name address phone district localbody_name localbody_type");
+    }).select("_id industry_name address phone district localbody_name localbody_type location_coords");
 
     const industrialPickupsWithUser = industrialPickups.map(p => {
       const user = industrialUsers.find(u => u._id.equals(p.user));

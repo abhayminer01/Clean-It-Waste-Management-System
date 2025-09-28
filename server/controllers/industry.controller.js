@@ -84,16 +84,61 @@ const checkAuth = async (req, res) => {
 const checkStatus = async (req, res) => {
     try {
         const user = req.user;
-        res.status(400).json({ success : true, status : user.status });
+        res.status(400).json({ success : true, status : user.status, name : user.industry_name });
     } catch (error) {
         res.status(500).json({ success : false, message : 'Error Occured', err : error });
         console.log(error);
     }
 }
 
+// GET PROFILE
+const getIndustryProfile = async (req, res) => {
+  try {
+    const industry = await Industry.findById(req.user._id).select("-password");
+    if (!industry) {
+      return res.status(404).json({ success: false, message: "Industry not found" });
+    }
+    res.json({ success: true, data: industry });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching profile" });
+  }
+};
+
+// UPDATE PROFILE
+const updateIndustryProfile = async (req, res) => {
+  try {
+    const { industry_name, contact, address, district, localbody_type, localbody_name, licence } = req.body;
+
+    const updated = await Industry.findByIdAndUpdate(
+      req.user.user_id,
+      { industry_name, contact, address, district, localbody_type, localbody_name, licence },
+      { new: true, runValidators: true, select: "-password" }
+    );
+
+    res.json({ success: true, message: "Profile updated", data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error updating profile" });
+  }
+};
+
+// LOGOUT
+const logoutIndustry = async (req, res) => {
+  try {
+    req.session.destroy(() => {
+      res.json({ success: true, message: "Logged out successfully" });
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error logging out" });
+  }
+};
+
+
 module.exports = {
-    registerIndustry,
-    checkAuth,
-    loginIndustry,
-    checkStatus
+  registerIndustry,
+  checkAuth,
+  loginIndustry,
+  checkStatus, 
+  getIndustryProfile, 
+  updateIndustryProfile, 
+  logoutIndustry
 }

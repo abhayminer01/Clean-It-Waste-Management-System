@@ -85,10 +85,15 @@ export default function AcceptedPickups() {
   // Normalize coordinates for all pickups
   const normalize = (pickup) => {
     let coords = null;
-    if (pickup.user?.location_coords) {
-      coords = { lat: pickup.user.location_coords.lat, lng: pickup.user.location_coords.lng };
-    } else if (pickup.user?.coords) {
-      coords = { lat: pickup.user.coords.latitude, lng: pickup.user.coords.longitude };
+    const { location_coords, coords: legacyCoords } = pickup.user || {};
+
+    if (location_coords?.lat != null && location_coords?.lng != null) {
+      coords = { lat: location_coords.lat, lng: location_coords.lng };
+    } else if (legacyCoords) {
+      const { latitude, longitude, lat, lng } = legacyCoords;
+      if ((latitude != null && longitude != null) || (lat != null && lng != null)) {
+        coords = { lat: latitude ?? lat, lng: longitude ?? lng };
+      }
     }
     return { ...pickup, coords };
   };

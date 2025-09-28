@@ -6,6 +6,7 @@ import { Building2, Calendar, History, CreditCard, User, Clock, CheckCircle, Ale
 export default function IndustryHome() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('');
+  const [name, setName] = useState('Industry Partner');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -26,6 +27,7 @@ export default function IndustryHome() {
       try {
         const req = await checkStatus();
         setStatus(req.status);
+        setName(req.name);
       } catch (err) {
         setError("Failed to load account status.");
       } finally {
@@ -68,13 +70,6 @@ export default function IndustryHome() {
     }
   ];
 
-  const stats = [
-    { label: "Total Pickups", value: "47", icon: <Truck className="w-5 h-5 text-emerald-600" /> },
-    { label: "Waste Collected", value: "12.8T", icon: <TrendingUp className="w-5 h-5 text-blue-600" /> },
-    { label: "Active Contracts", value: "3", icon: <CheckCircle className="w-5 h-5 text-purple-600" /> },
-    { label: "Eco Rating", value: "A+", icon: <Award className="w-5 h-5 text-orange-600" /> }
-  ];
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50 flex items-center justify-center">
@@ -115,14 +110,12 @@ export default function IndustryHome() {
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
-                CleanIt Industry
+                Clean-It : Industry Dashboard
               </span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-6 text-sm">
                 <a href="#" className="text-emerald-700 hover:text-emerald-900 font-medium transition-colors">Dashboard</a>
-                <a href="#" className="text-gray-600 hover:text-emerald-700 font-medium transition-colors">Services</a>
-                <a href="#" className="text-gray-600 hover:text-emerald-700 font-medium transition-colors">Support</a>
               </div>
               <button 
                 onClick={() => navigate('/industry/profile')}
@@ -160,7 +153,7 @@ export default function IndustryHome() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    Welcome Back, Industry Partner! 🏭
+                    Welcome Back, {name} 🏭
                   </h1>
                   <p className="text-gray-600">
                     {new Date().toLocaleDateString('en-US', { 
@@ -183,19 +176,6 @@ export default function IndustryHome() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-4">
-                    {stat.icon}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                  <div className="text-gray-600 text-sm">{stat.label}</div>
-                </div>
-              ))}
             </div>
 
             {/* Features Grid */}
