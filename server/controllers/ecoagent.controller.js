@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const EcoAgent = require("../models/ecoagent.model");
 const User = require("../models/user.model");
 const Pickup = require("../models/pickup.model");
+const Industry = require("../models/industry.model");
+const Payment = require("../models/payment.model")
 
 // ECO AGENT LOGIN
 const agentLogin = async (req, res) => {
@@ -52,32 +54,111 @@ const agentLogin = async (req, res) => {
 };
 
 // GET NEW PICKUPS FOR ECO AGENT
-const getNewPickupsForAgent = async (req, res) => {
+// Household pickups
+const getNewHouseholdPickups = async (req, res) => {
   try {
-    const agent = req.user;
-    if (!agent) return res.status(401).json({ success: false, message: "Unauthorized" });
+    const user = req.user;
+    if (!user?.user_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
-    const users = await User.find({
+    const agent = await EcoAgent.findById(user.user_id);
+    if (!agent) return res.status(404).json({ success: false, message: "Agent not found" });
+
+    // Get all household users in same area
+    const usersInSameArea = await User.find({
       district: agent.district,
-      localbody_name: agent.localbody_name,
       localbody_type: agent.localbody_type,
+      localbody_name: agent.localbody_name,
     }).select("_id");
 
-    const userIds = users.map((u) => u._id);
+    const userIds = usersInSameArea.map((u) => u._id);
+
+    if (!userIds.length) return res.status(200).json({ success: true, pickups: [] });
 
     const pickups = await Pickup.find({
       user: { $in: userIds },
       status: "pending",
+      pickup_type: "household"
     })
-      .populate("user", "full_name address mobile_number")
+      .populate({
+        path: "user",
+        select: "full_name email mobile_number address district localbody_type localbody_name location_coords",
+        model: User,
+      })
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, pickups });
+    return res.status(200).json({ success: true, pickups });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Failed to fetch pickups", error });
+    console.error("Error in getNewHouseholdPickups:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+// Industrial pickups
+const getNewIndustrialPickups = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user?.user_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const agent = await EcoAgent.findById(user.user_id);
+    if (!agent) return res.status(404).json({ success: false, message: "Agent not found" });
+
+    const industrialUsersInSameArea = await Industry.find({
+      district: agent.district,
+      localbody_type: agent.localbody_type,
+      localbody_name: agent.localbody_name,
+    }).select("_id");
+
+    const industrialUserIds = industrialUsersInSameArea.map((ind) => ind._id);
+
+    if (!industrialUserIds.length) return res.status(200).json({ success: true, pickups: [] });
+
+    let pickups = await Pickup.find({
+      user: { $in: industrialUserIds },
+      status: "pending",
+      pickup_type: "industrial"
+    })
+      .populate("payment")
+      .sort({ createdAt: -1 });
+
+    // Attach industrial user info via Payment
+    const processed = [];
+    for (const pickup of pickups) {
+      try {
+        if (!pickup.payment) continue;
+
+        const payment = await Payment.findById(pickup.payment).populate({
+          path: "user",
+          select: "name email licence address district localbody_type localbody_name location_coords",
+          model: Industry,
+        });
+
+        if (payment && payment.user) {
+          const industrialPickup = pickup.toObject();
+          industrialPickup.user = payment.user;
+          industrialPickup.payment = {
+            _id: payment._id,
+            amount: payment.amount,
+            status: payment.status,
+            createdAt: payment.createdAt,
+          };
+          processed.push(industrialPickup);
+        }
+      } catch (err) {
+        console.error("Error populating industrial pickup:", err);
+      }
+    }
+
+    return res.status(200).json({ success: true, pickups: processed });
+  } catch (error) {
+    console.error("Error in getNewIndustrialPickups:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 // PATCH /pickup/:id/accept
 const acceptPickup = async (req, res) => {
@@ -137,7 +218,7 @@ const getAcceptedPickups = async (req, res) => {
     const agentId = req.session.agent.agent_id;
 
     const pickups = await Pickup.find({ agent: agentId, status: "accepted" })
-      .populate("user", "full_name email location_coords")
+      .populate("user", "full_name email location_coords address mobile_number")
       .populate("payment", "status amount");
 
     res.status(200).json({
@@ -199,4 +280,4 @@ const markPickupAsPicked = async (req, res) => {
   }
 };
 
-module.exports = { agentLogin, getNewPickupsForAgent, acceptPickup, getAcceptedPickups, markPickupAsPicked };
+module.exports = { agentLogin, acceptPickup, getAcceptedPickups, markPickupAsPicked, getNewHouseholdPickups, getNewIndustrialPickups };

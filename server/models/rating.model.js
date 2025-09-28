@@ -13,7 +13,8 @@ const ratingSchema = new mongoose.Schema({
     hazardousHandling: { type: Number, required: true },
     overallSatisfaction: { type: Number, required: true },
   },
-  totalScore: { type: Number, required: true }, // out of 100
+  totalScore: { type: Number, required: true },
+  coins_credited: { type: Number, default: 0 },
 }, { timestamps: true });
 
 const Rating = mongoose.model("Rating", ratingSchema);

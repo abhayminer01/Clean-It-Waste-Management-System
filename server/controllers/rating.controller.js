@@ -1,38 +1,69 @@
-// controllers/rating.controller.js
 const Pickup = require("../models/pickup.model");
 const EcoCoin = require("../models/ecoCoin.model");
+const Rating = require("../models/rating.model");
 const calculateCoins = require("../utils/calculateCoins");
 
 const submitRating = async (req, res) => {
   try {
-    const { id } = req.params; // pickup id
+    const { id } = req.params;
     const { correctSegregation, cleanliness, timingCompliance, hazardousHandling, overallSatisfaction } = req.body;
 
-    // Fetch pickup
     const pickup = await Pickup.findById(id).populate("user").populate("payment");
     if (!pickup) return res.status(404).json({ success: false, message: "Pickup not found" });
 
-    // Total score out of 100
-    const totalScore = Math.floor(
-      (correctSegregation + cleanliness + timingCompliance + hazardousHandling + overallSatisfaction) * 20
-    );
+    const toNum = (val) => Number(val) || 0;
 
-    // Credit Eco Coins only for household user and unpaid pickup
+    const sumScores =
+      toNum(correctSegregation) +
+      toNum(cleanliness) +
+      toNum(timingCompliance) +
+      toNum(hazardousHandling) +
+      toNum(overallSatisfaction);
+
+    const totalScore = Math.round((sumScores / 25) * 100);
+
+    // 👉 Calculate coins for this rating
+    let coins = 0;
     if (pickup.pickup_type !== "industrial" && !pickup.payment) {
-      const coins = calculateCoins(totalScore);
+      coins = calculateCoins(totalScore);
 
-      // Save eco coin record
-      await EcoCoin.create({
-        user: pickup.user._id,
-        pickup: pickup._id,
-        coins
-      });
+      // Update or create EcoCoin wallet
+      const ecoWallet = await EcoCoin.findOne({ user: pickup.user._id });
+      if (ecoWallet) {
+        ecoWallet.totalCoins += coins;
+        ecoWallet.history.push({
+          pickup: pickup._id,
+          coins,
+          date: new Date()
+        });
+        await ecoWallet.save();
+      } else {
+        await EcoCoin.create({
+          user: pickup.user._id,
+          totalCoins: coins,
+          history: [{ pickup: pickup._id, coins, date: new Date() }]
+        });
+      }
     }
+
+    // 👉 Save rating
+    const rating = await Rating.create({
+      pickup: pickup._id,
+      scores: {
+        correctSegregation: toNum(correctSegregation),
+        cleanliness: toNum(cleanliness),
+        timingCompliance: toNum(timingCompliance),
+        hazardousHandling: toNum(hazardousHandling),
+        overallSatisfaction: toNum(overallSatisfaction),
+      },
+      totalScore,
+      coins_credited: coins,
+    });
 
     res.status(200).json({
       success: true,
       message: "Rating submitted successfully",
-      rating: { totalScore }
+      rating,
     });
   } catch (err) {
     console.error(err);

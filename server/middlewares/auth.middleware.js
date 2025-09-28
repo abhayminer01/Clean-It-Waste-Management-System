@@ -42,6 +42,7 @@ const ecoagentAuthMiddleware = async (req, res, next) => {
 
         const user = await EcoAgent.findById(req.session.agent.agent_id);
         req.user = user;
+        req.user.user_id = user._id;
         next();
     } catch (error) {
         console.log(error);

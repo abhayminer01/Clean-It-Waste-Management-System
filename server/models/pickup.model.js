@@ -10,7 +10,7 @@ const pickupSchema = new mongoose.Schema(
       type: String,
       enum: ["Plastic", "Organic", "E-Waste", "Scrap", "Other"],
     },
-    sheduled_date: {
+    scheduled_date: {
       type: String,
     },
     scheduled_time: {

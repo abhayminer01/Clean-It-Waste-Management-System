@@ -12,7 +12,7 @@ const createPickup = async (req, res) => {
             user : req.user._id,
             waste_type : wasteType,
             scheduled_time : timeSlot,
-            sheduled_date : pickupDate
+            scheduled_date : pickupDate
         });
 
         res.status(200).json({ success : true, message : "Pickup Scheduled Succesfully" });
@@ -60,7 +60,7 @@ const updatePickup = async (req, res) => {
       { _id: id, user: req.user._id },
       {
         waste_type: wasteType,
-        sheduled_date: pickupDate,
+        scheduled_date: pickupDate,
         scheduled_time: timeSlot,
       },
       { new: true }
@@ -89,7 +89,7 @@ const createIndustryPickup = async (req, res) => {
             user : req.user._id,
             waste_type : wasteType,
             scheduled_time : timeSlot,
-            sheduled_date : pickupDate,
+            scheduled_date : pickupDate,
             pickup_type : 'industrial'
         });
 
@@ -119,7 +119,7 @@ const updateIndustryPickup = async (req, res) => {
 
     const pickup = await Pickup.findOneAndUpdate(
       { _id: id, user: req.user._id },
-      { waste_type, sheduled_date, scheduled_time },
+      { waste_type, scheduled_date, scheduled_time },
       { new: true }
     );
 
@@ -151,7 +151,7 @@ const deleteIndustryPickup = async (req, res) => {
 const getPickupById = async (req, res) => {
   try {
     const { id } = req.params;
-    const pickup = await Pickup.findOne({ _id: id }).populate('payment');
+    const pickup = await Pickup.findOne({ _id: id }).populate('payment').populate('user');
 
     if (!pickup) {
       return res.status(404).json({ success: false, message: "Pickup not found" });
