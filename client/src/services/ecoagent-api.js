@@ -106,3 +106,30 @@ export const submitRating = async (ratingId, scores) => {
     return error.response?.data || { success: false, message: "Error updating pickup" };
   }
 }
+
+
+export const getAgentProfile = async () => {
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/ecoagent/profile`,
+      { withCredentials: true }
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return error.response?.data || { success: false, message: "Error Getting profile" };
+  }
+}
+
+export const logoutAgent = async () => {
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/ecoagent/logout`,
+      { withCredentials: true }
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return error.response?.data || { success: false, message: "Error Getting profile" };
+  }
+}

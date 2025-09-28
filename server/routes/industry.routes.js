@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const industryController = require("../controllers/industry.controller");
 const pickupController = require("../controllers/pickup.controller");
-const { industryAuthMiddleware } = require("../middlewares/auth.middleware");
+const { industryAuthMiddleware, ecoagentAuthMiddleware } = require("../middlewares/auth.middleware");
+const industryController = require('../controllers/industry.controller');
 
 router.post("/register", industryController.registerIndustry);
 router.post("/login", industryController.loginIndustry);
@@ -17,5 +17,6 @@ router.get("/logout", industryAuthMiddleware, industryController.logoutIndustry)
 router.get("/user/history", industryAuthMiddleware, pickupController.getIndustryUserPickups);
 router.put("/:id", industryAuthMiddleware, pickupController.updateIndustryPickup);
 router.delete("/:id", industryAuthMiddleware, pickupController.deleteIndustryPickup);
+router.get("/pickups", ecoagentAuthMiddleware, industryController.getAgentPickups);
 
 module.exports = router;

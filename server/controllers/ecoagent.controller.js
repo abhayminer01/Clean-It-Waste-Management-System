@@ -318,4 +318,28 @@ const markPickupAsPicked = async (req, res) => {
   }
 };
 
-module.exports = { agentLogin, acceptPickup, getAcceptedPickups, markPickupAsPicked, getNewHouseholdPickups, getNewIndustrialPickups };
+// GET PROFILE
+const getAgentProfile = async (req, res) => {
+  try {
+    const agent = await EcoAgent.findById(req.user._id).select("-password");
+    if (!agent) {
+      return res.status(404).json({ success: false, message: "Agent not found" });
+    }
+    res.json({ success: true, data: agent });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching profile" });
+  }
+};
+
+// LOGOUT
+const logoutAgent = async (req, res) => {
+  try {
+    req.session.destroy(() => {
+      res.json({ success: true, message: "Logged out successfully" });
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error logging out" });
+  }
+};
+
+module.exports = { agentLogin, getAgentProfile, logoutAgent, acceptPickup, getAcceptedPickups, markPickupAsPicked, getNewHouseholdPickups, getNewIndustrialPickups };

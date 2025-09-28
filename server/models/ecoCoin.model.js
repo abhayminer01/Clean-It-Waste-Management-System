@@ -19,5 +19,5 @@ const ecoCoinSchema = new mongoose.Schema({
 
   createdAt: { type: Date, default: Date.now }
 });
-
-module.exports = mongoose.model("EcoCoin", ecoCoinSchema);
+const EcoCoin = mongoose.model("EcoCoin", ecoCoinSchema);
+module.exports = EcoCoin;

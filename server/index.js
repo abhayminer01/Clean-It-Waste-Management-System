@@ -12,6 +12,7 @@ const userRoutes = require('./routes/user.routes');
 const paymentRoutes = require("./routes/payment.routes");
 const ecoagentRoutes = require('./routes/ecoagent.routes');
 const ratingRoutes = require('./routes/rating.routes');
+const ecocoinRoutes = require('./routes/ecoCoin.routes');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/user', userRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/ecoagent", ecoagentRoutes);
 app.use("/api/rating", ratingRoutes);
+app.use("/api/ecocoin", ecocoinRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

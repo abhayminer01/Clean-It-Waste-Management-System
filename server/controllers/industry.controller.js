@@ -1,5 +1,6 @@
 const Industry = require("../models/industry.model");
 const bcrypt = require('bcrypt');
+const Pickup = require("../models/pickup.model");
 
 // REGISTER INDUSTRIAL USER
 const registerIndustry = async (req, res) => {
@@ -132,6 +133,22 @@ const logoutIndustry = async (req, res) => {
   }
 };
 
+// GET ALL PICKUPS ASSIGNED TO A SPECIFIC ECO AGENT
+const getAgentPickups = async (req, res) => {
+  try {
+    // req.user comes from eco agent auth middleware
+    const pickups = await Pickup.find({ agent: req.user._id })
+      .populate("user", "full_name address email")
+      .populate("payment") 
+      .sort({ scheduled_date: -1 });
+
+    res.status(200).json({ success: true, pickups });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error fetching agent pickups", err: error });
+  }
+};
+
 
 module.exports = {
   registerIndustry,
@@ -140,5 +157,6 @@ module.exports = {
   checkStatus, 
   getIndustryProfile, 
   updateIndustryProfile, 
-  logoutIndustry
+  logoutIndustry,
+  getAgentPickups
 }

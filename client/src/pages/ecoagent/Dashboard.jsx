@@ -12,10 +12,8 @@ export default function Dashboard() {
         ecoRating: 'A'
     });
 
-    // Simulate loading agent stats
     useEffect(() => {
         const timer = setTimeout(() => {
-            // Mock data - in real app this would come from API
             setStats({
                 totalPickups: 147,
                 completedToday: 12,
@@ -77,14 +75,12 @@ export default function Dashboard() {
                                 <Leaf className="w-6 h-6 text-white" />
                             </div>
                             <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
-                                CleanIt EcoAgent
+                                Clean-It : EcoAgent Dashboard
                             </span>
                         </div>
                         <div className="flex items-center space-x-4">
                             <div className="hidden md:flex items-center space-x-6 text-sm">
                                 <a href="#" className="text-emerald-700 hover:text-emerald-900 font-medium transition-colors">Dashboard</a>
-                                <a href="#" className="text-gray-600 hover:text-emerald-700 font-medium transition-colors">Assignments</a>
-                                <a href="#" className="text-gray-600 hover:text-emerald-700 font-medium transition-colors">Support</a>
                             </div>
                             <button 
                                 onClick={() => navigate('/ecoagent/profile')}
@@ -137,21 +133,6 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {/* Quick Stats */}
-                {!loading && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {quickStats.map((stat, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 hover:shadow-md transition-shadow">
-                                <div className="flex items-center justify-between mb-4">
-                                    {stat.icon}
-                                </div>
-                                <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                                <div className="text-gray-600 text-sm">{stat.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
                 {/* Features Grid */}
                 <div className="mb-12">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Agent Dashboard</h2>
@@ -171,30 +152,6 @@ export default function Dashboard() {
                         ))}
                     </div>
                 </div>
-
-                {/* Performance Summary */}
-                {!loading && (
-                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-emerald-100 mb-8">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-emerald-600" />
-                            Weekly Performance Summary
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                                <div className="text-3xl font-bold text-emerald-700">98%</div>
-                                <div className="text-sm text-emerald-600">On-time Rate</div>
-                            </div>
-                            <div className="text-center p-4 bg-green-50 rounded-lg">
-                                <div className="text-3xl font-bold text-green-700">4.9</div>
-                                <div className="text-sm text-green-600">Customer Rating</div>
-                            </div>
-                            <div className="text-center p-4 bg-blue-50 rounded-lg">
-                                <div className="text-3xl font-bold text-blue-700">1.2T</div>
-                                <div className="text-sm text-blue-600">Waste Collected</div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Call to Action */}
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl p-8 text-center text-white">

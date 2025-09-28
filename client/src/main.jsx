@@ -23,6 +23,8 @@ import EcoPickupHistory from './pages/ecoagent/EcoPickupHistory';
 import AcceptedPickups from './pages/ecoagent/AcceptedPickups';
 import RatingPage from './pages/ecoagent/RatingPage';
 import IndustryProfile from './pages/industry/IndustryProfile';
+import AgentProfile from './pages/ecoagent/AgentProfile';
+import EcoCoin from './pages/household/EcoCoin';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -52,6 +54,10 @@ createRoot(document.getElementById('root')).render(
         <Route path='ecoagent/pickups/history' element = { <EcoPickupHistory /> } />
         <Route path='ecoagent/pickups/accepted' element = { <AcceptedPickups /> } />
         <Route path='ecoagent/rating/:id' element = { <RatingPage /> } />
+        <Route path='ecoagent/profile' element = { <AgentProfile /> } />
+
+        <Route path='ecocoins' element = { <EcoCoin /> } />
+
 
       </Routes>
     </Router>

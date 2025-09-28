@@ -9,12 +9,12 @@ export default function LaunchPage() {
     {
       icon: <Truck className="w-8 h-8" />,
       title: "Smart Pickup Scheduling",
-      description: "Schedule waste collection at your convenience with real-time tracking"
+      description: "Schedule waste collection at your convenience"
     },
     {
       icon: <Recycle className="w-8 h-8" />,
-      title: "Eco-Friendly Rewards",
-      description: "Earn Eco Coins for every pickup and redeem exciting offers"
+      title: "Eco-Coin Rewards",
+      description: "Earn Eco Coins for every pickup and redeem for government services"
     },
     {
       icon: <Users className="w-8 h-8" />,
@@ -33,7 +33,7 @@ export default function LaunchPage() {
               <Leaf className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-700 bg-clip-text text-transparent">
-              CleanIt
+              Clean-It
             </span>
           </div>
           <button 
@@ -52,7 +52,7 @@ export default function LaunchPage() {
           <div className="space-y-8">
             <div className="inline-flex items-center bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-medium">
               <Sparkles className="w-4 h-4 mr-2" />
-              Join 10,000+ eco-conscious users
+              Digitalized version of "Haritha karma Sena"
             </div>
             
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
@@ -63,9 +63,8 @@ export default function LaunchPage() {
             </h1>
             
             <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
-              CleanIt makes sustainable waste disposal simple, rewarding, and impactful. 
-              Schedule pickups, track your environmental contribution, and earn rewards 
-              for building a cleaner future.
+              Clean-It makes sustainable waste disposal simple, rewarding, and impactful. 
+              Schedule pickups,  and earn rewards for building a cleaner future.
             </p>
             
             <button 
@@ -77,7 +76,7 @@ export default function LaunchPage() {
             </button>
             
             <p className="text-gray-500 text-sm">
-              No credit card required • 100% free for residential users
+              Be the Game Changer for a bright future
             </p>
           </div>
 
@@ -95,24 +94,6 @@ export default function LaunchPage() {
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
-            
-            {/* Stats Preview */}
-            <div className="bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl p-6 text-white">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold">12.4T</div>
-                  <div className="text-emerald-100 text-sm">CO2 Reduced</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">8.2T</div>
-                  <div className="text-emerald-100 text-sm">Waste Collected</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">3.9K</div>
-                  <div className="text-emerald-100 text-sm">Happy Users</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

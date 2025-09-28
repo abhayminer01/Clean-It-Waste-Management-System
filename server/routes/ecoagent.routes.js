@@ -12,5 +12,8 @@ router.patch("/pickups/:id/accept", ecoagentAuthMiddleware, ecoagentController.a
 router.get("/pickups/accepted", ecoagentAuthMiddleware, ecoagentController.getAcceptedPickups);
 router.patch("/pickups/:id/picked", ecoagentAuthMiddleware, ecoagentController.markPickupAsPicked);
 
+router.get('/profile', ecoagentAuthMiddleware, ecoagentController.getAgentProfile);
+router.get('/logout', ecoagentAuthMiddleware, ecoagentController.logoutAgent);
+
 
 module.exports = router;

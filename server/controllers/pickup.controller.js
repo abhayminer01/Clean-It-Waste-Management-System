@@ -166,6 +166,8 @@ const getPickupById = async (req, res) => {
 };
 
 
+
+
 module.exports = {
     createPickup,
     createIndustryPickup,
@@ -175,5 +177,5 @@ module.exports = {
     getIndustryUserPickups,
     updateIndustryPickup,
     deleteIndustryPickup,
-    getPickupById
+    getPickupById,
 }
