@@ -36,12 +36,15 @@ export default function IndustrialPickupHistory() {
   }, []);
 
   const handleEdit = (pickup) => {
-    setEditingId(pickup._id);
-    setFormData({
-      waste_type: pickup.waste_type,
-      sheduled_date: pickup.sheduled_date.split("T")[0],
-      scheduled_time: pickup.scheduled_time,
-    });
+    // Only allow editing for non-picked pickups
+    if (pickup.status !== "picked") {
+      setEditingId(pickup._id);
+      setFormData({
+        waste_type: pickup.waste_type,
+        sheduled_date: pickup.sheduled_date.split("T")[0],
+        scheduled_time: pickup.scheduled_time,
+      });
+    }
   };
 
   const handleUpdate = async (id) => {
@@ -81,6 +84,8 @@ export default function IndustrialPickupHistory() {
         return "bg-yellow-100 text-yellow-700";
       case "cancelled":
         return "bg-red-100 text-red-700";
+      case "picked":
+        return "bg-blue-100 text-blue-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -98,6 +103,10 @@ export default function IndustrialPickupHistory() {
         return "bg-gray-100 text-gray-700";
     }
   };
+
+  // Separate pickups into active and completed
+  const activePickups = pickups.filter(p => p.status !== "picked");
+  const completedPickups = pickups.filter(p => p.status === "picked");
 
   if (loading) {
     return (
@@ -143,168 +152,296 @@ export default function IndustrialPickupHistory() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {pickups.map((p) => (
-              <div
-                key={p._id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-emerald-100 group"
-              >
-                {editingId === p._id ? (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-blue-700 mb-3">Edit Pickup</h3>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Waste Type</label>
-                      <input
-                        type="text"
-                        value={formData.waste_type}
-                        onChange={(e) => setFormData({ ...formData, waste_type: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                        placeholder="Waste Type"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Pickup Date</label>
-                      <input
-                        type="date"
-                        value={formData.sheduled_date}
-                        onChange={(e) => setFormData({ ...formData, sheduled_date: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Time Slot</label>
-                      <input
-                        type="text"
-                        value={formData.scheduled_time}
-                        onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                        placeholder="Time Slot (e.g., Morning 8AM-10AM)"
-                      />
-                    </div>
-                    
-                    <div className="flex space-x-3 pt-2">
-                      <button
-                        onClick={() => handleUpdate(p._id)}
-                        className="flex-1 bg-emerald-500 text-white py-2 px-4 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
-                      >
-                        Save Changes
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors font-medium"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {/* Pickup Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-semibold text-gray-800">
-                        Pickup #{p._id.slice(-6).toUpperCase()}
-                      </h2>
-                      <span className={`px-3 py-1 text-xs rounded-full font-medium flex items-center space-x-1 ${getStatusColor(p.status)}`}>
-                        {p.status === "accepted" ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                        <span className="capitalize">{p.status}</span>
-                      </span>
-                    </div>
+          <>
+            {/* Active Pickups */}
+            {activePickups.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <Clock className="w-6 h-6 mr-2 text-yellow-600" />
+                  Active Pickups
+                </h2>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {activePickups.map((p) => (
+                    <div
+                      key={p._id}
+                      className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-emerald-100 group"
+                    >
+                      {editingId === p._id ? (
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-bold text-blue-700 mb-3">Edit Pickup</h3>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Waste Type</label>
+                            <input
+                              type="text"
+                              value={formData.waste_type}
+                              onChange={(e) => setFormData({ ...formData, waste_type: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                              placeholder="Waste Type"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Pickup Date</label>
+                            <input
+                              type="date"
+                              value={formData.sheduled_date}
+                              onChange={(e) => setFormData({ ...formData, sheduled_date: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Time Slot</label>
+                            <input
+                              type="text"
+                              value={formData.scheduled_time}
+                              onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                              placeholder="Time Slot (e.g., Morning 8AM-10AM)"
+                            />
+                          </div>
+                          
+                          <div className="flex space-x-3 pt-2">
+                            <button
+                              onClick={() => handleUpdate(p._id)}
+                              className="flex-1 bg-emerald-500 text-white py-2 px-4 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
+                            >
+                              Save Changes
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Pickup Header */}
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-gray-800">
+                              Pickup #{p._id.slice(-6).toUpperCase()}
+                            </h2>
+                            <span className={`px-3 py-1 text-xs rounded-full font-medium flex items-center space-x-1 ${getStatusColor(p.status)}`}>
+                              {p.status === "accepted" ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                              <span className="capitalize">{p.status}</span>
+                            </span>
+                          </div>
 
-                    {/* Pickup Details */}
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center space-x-3 text-sm">
-                        <Truck className="w-4 h-4 text-emerald-600" />
-                        <div>
-                          <span className="text-gray-600 font-medium">Waste Type:</span>
-                          <span className="text-gray-900 ml-1">{p.waste_type}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3 text-sm">
-                        <Calendar className="w-4 h-4 text-blue-600" />
-                        <div>
-                          <span className="text-gray-600 font-medium">Date:</span>
-                          <span className="text-gray-900 ml-1">
-                            {new Date(p.sheduled_date).toLocaleDateString('en-US', {
-                              weekday: 'short',
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3 text-sm">
-                        <Clock className="w-4 h-4 text-purple-600" />
-                        <div>
-                          <span className="text-gray-600 font-medium">Time:</span>
-                          <span className="text-gray-900 ml-1">{p.scheduled_time}</span>
-                        </div>
-                      </div>
-                    </div>
+                          {/* Pickup Details */}
+                          <div className="space-y-3 mb-4">
+                            <div className="flex items-center space-x-3 text-sm">
+                              <Truck className="w-4 h-4 text-emerald-600" />
+                              <div>
+                                <span className="text-gray-600 font-medium">Waste Type:</span>
+                                <span className="text-gray-900 ml-1">{p.waste_type}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3 text-sm">
+                              <Calendar className="w-4 h-4 text-blue-600" />
+                              <div>
+                                <span className="text-gray-600 font-medium">Date:</span>
+                                <span className="text-gray-900 ml-1">
+                                  {new Date(p.sheduled_date).toLocaleDateString('en-US', {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3 text-sm">
+                              <Clock className="w-4 h-4 text-purple-600" />
+                              <div>
+                                <span className="text-gray-600 font-medium">Time:</span>
+                                <span className="text-gray-900 ml-1">{p.scheduled_time}</span>
+                              </div>
+                            </div>
+                          </div>
 
-                    {/* Payment Details */}
-                    {p.payment ? (
-                      <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700 flex items-center space-x-1">
-                            <CreditCard className="w-3 h-3" />
-                            <span>Payment</span>
-                          </span>
-                          <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${getPaymentStatusColor(p.payment.status)}`}>
-                            {p.payment.status}
-                          </span>
-                        </div>
-                        <div className="text-sm space-y-1">
-                          <p className="text-gray-900 font-semibold">₹{(p.payment.amount / 100).toFixed(2)}</p>
-                          {p.payment.createdAt && (
-                            <p className="text-gray-600">
-                              {new Date(p.payment.createdAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
+                          {/* Payment Details */}
+                          {p.payment ? (
+                            <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700 flex items-center space-x-1">
+                                  <CreditCard className="w-3 h-3" />
+                                  <span>Payment</span>
+                                </span>
+                                <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${getPaymentStatusColor(p.payment.status)}`}>
+                                  {p.payment.status}
+                                </span>
+                              </div>
+                              <div className="text-sm space-y-1">
+                                <p className="text-gray-900 font-semibold">₹{(p.payment.amount / 100).toFixed(2)}</p>
+                                {p.payment.createdAt && (
+                                  <p className="text-gray-600">
+                                    {new Date(p.payment.createdAt).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                              <p className="text-xs text-red-700 flex items-center space-x-1">
+                                <AlertCircle className="w-3 h-3" />
+                                <span>Payment not available</span>
+                              </p>
+                            </div>
                           )}
+
+                          {/* Actions */}
+                          <div className="flex space-x-2 pt-2">
+                            <button
+                              onClick={() => handleEdit(p)}
+                              className="flex-1 bg-yellow-500 text-white py-2 px-3 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center space-x-1 text-sm font-medium"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDelete(p._id)}
+                              className="flex-1 bg-red-500 text-white py-2 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center space-x-1 text-sm font-medium"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Completed Pickups */}
+            {completedPickups.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <CheckCircle className="w-6 h-6 mr-2 text-blue-600" />
+                  Previous Pickups
+                </h2>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {completedPickups.map((p) => (
+                    <div
+                      key={p._id}
+                      className="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200 opacity-80 cursor-not-allowed"
+                    >
+                      {/* Pickup Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800">
+                          Pickup #{p._id.slice(-6).toUpperCase()}
+                        </h2>
+                        <span className={`px-3 py-1 text-xs rounded-full font-medium flex items-center space-x-1 ${getStatusColor(p.status)}`}>
+                          <CheckCircle className="w-3 h-3" />
+                          <span className="capitalize">{p.status}</span>
+                        </span>
+                      </div>
+
+                      {/* Pickup Details */}
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center space-x-3 text-sm">
+                          <Truck className="w-4 h-4 text-emerald-600" />
+                          <div>
+                            <span className="text-gray-600 font-medium">Waste Type:</span>
+                            <span className="text-gray-900 ml-1">{p.waste_type}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 text-sm">
+                          <Calendar className="w-4 h-4 text-blue-600" />
+                          <div>
+                            <span className="text-gray-600 font-medium">Date:</span>
+                            <span className="text-gray-900 ml-1">
+                              {new Date(p.sheduled_date).toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 text-sm">
+                          <Clock className="w-4 h-4 text-purple-600" />
+                          <div>
+                            <span className="text-gray-600 font-medium">Time:</span>
+                            <span className="text-gray-900 ml-1">{p.scheduled_time}</span>
+                          </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-                        <p className="text-xs text-red-700 flex items-center space-x-1">
-                          <AlertCircle className="w-3 h-3" />
-                          <span>Payment not available</span>
-                        </p>
-                      </div>
-                    )}
 
-                    {/* Actions */}
-                    <div className="flex space-x-2 pt-2">
-                      <button
-                        onClick={() => handleEdit(p)}
-                        className="flex-1 bg-yellow-500 text-white py-2 px-3 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center space-x-1 text-sm font-medium"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p._id)}
-                        className="flex-1 bg-red-500 text-white py-2 px-3 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center space-x-1 text-sm font-medium"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Delete</span>
-                      </button>
+                      {/* Payment Details */}
+                      {p.payment ? (
+                        <div className="bg-white rounded-lg p-3 mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700 flex items-center space-x-1">
+                              <CreditCard className="w-3 h-3" />
+                              <span>Payment</span>
+                            </span>
+                            <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${getPaymentStatusColor(p.payment.status)}`}>
+                              {p.payment.status}
+                            </span>
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <p className="text-gray-900 font-semibold">₹{(p.payment.amount / 100).toFixed(2)}</p>
+                            {p.payment.createdAt && (
+                              <p className="text-gray-600">
+                                {new Date(p.payment.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                          <p className="text-xs text-red-700 flex items-center space-x-1">
+                            <AlertCircle className="w-3 h-3" />
+                            <span>Payment not available</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Inactive Actions */}
+                      <div className="flex space-x-2 pt-2 opacity-50">
+                        <button
+                          disabled
+                          className="flex-1 bg-gray-300 text-gray-500 py-2 px-3 rounded-lg cursor-not-allowed flex items-center justify-center space-x-1 text-sm font-medium"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          disabled
+                          className="flex-1 bg-gray-300 text-gray-500 py-2 px-3 rounded-lg cursor-not-allowed flex items-center justify-center space-x-1 text-sm font-medium"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </div>
-                  </>
-                )}
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
         {/* Summary Stats */}
@@ -318,23 +455,23 @@ export default function IndustrialPickupHistory() {
                 </div>
                 <div className="text-sm text-emerald-600">Total Pickups</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-700">
-                  {pickups.filter(p => p.status === 'accepted').length}
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-700">
+                  {completedPickups.length}
                 </div>
-                <div className="text-sm text-green-600">Completed</div>
+                <div className="text-sm text-blue-600">Completed</div>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
                 <div className="text-2xl font-bold text-yellow-700">
-                  {pickups.filter(p => p.status === 'pending').length}
+                  {activePickups.length}
                 </div>
-                <div className="text-sm text-yellow-600">Pending</div>
+                <div className="text-sm text-yellow-600">Active</div>
               </div>
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-700">
-                  {pickups.reduce((sum, p) => sum + (p.payment?.amount / 100 || 0), 0).toFixed(2)}
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-700">
+                  ₹{pickups.reduce((sum, p) => sum + (p.payment?.amount / 100 || 0), 0).toFixed(2)}
                 </div>
-                <div className="text-sm text-blue-600">Total Spent (₹)</div>
+                <div className="text-sm text-purple-600">Total Spent</div>
               </div>
             </div>
           </div>

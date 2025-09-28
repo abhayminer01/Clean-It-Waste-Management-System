@@ -2,59 +2,128 @@ import React, { useEffect, useState } from "react";
 import { getAcceptedPickups, markPickupAsPicked } from "../../services/ecoagent-api";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet";
-import L from 'leaflet';
-import { Truck, User, MapPin, Calendar, Clock, CheckCircle, AlertCircle, Loader2, Phone, Home, Navigation, Timer, Bell } from 'lucide-react';
+import L from "leaflet";
+import {
+  Truck,
+  User,
+  MapPin,
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Phone,
+  Navigation,
+  Timer,
+  Home,
+  Building2,
+  X,
+  Award
+} from "lucide-react";
 
-// Fix for leaflet marker icons
+// Fix leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
+
+// Helper components for icons
+const Recycle = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2C8.5 2 5.7 4.8 5.7 8.3c0 2.1 1.1 4 2.8 5.2l1.5 1c.4.3.9.3 1.3 0l1.5-1c1.7-1.2 2.8-3.1 2.8-5.2 0-3.5-2.8-6.3-6.3-6.3zm0 10.5c-1.3 0-2.4-1.1-2.4-2.4s1.1-2.4 2.4-2.4 2.4 1.1 2.4 2.4-1.1 2.4-2.4 2.4z"/>
+  </svg>
+);
+
+const Leaf = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2C8.5 2 5.7 4.8 5.7 8.3c0 2.1 1.1 4 2.8 5.2l1.5 1c.4.3.9.3 1.3 0l1.5-1c1.7-1.2 2.8-3.1 2.8-5.2 0-3.5-2.8-6.3-6.3-6.3zm0 10.5c-1.3 0-2.4-1.1-2.4-2.4s1.1-2.4 2.4-2.4 2.4 1.1 2.4 2.4-1.1 2.4-2.4 2.4z"/>
+  </svg>
+);
+
+const Monitor = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M20 3H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h6l-2 3v1h8v-1l-2-3h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H4V5h16v10z"/>
+  </svg>
+);
+
+const Hammer = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M5 18h2v2H5v-2zm0-4h2v2H5v-2zm0-4h2v2H5V10zm0-4h2v2H5V6zm4 12h2v2H9v-2zm0-4h2v2H9v-2zm0-4h2v2H9V10zm0-4h2v2H9V6zm4 12h2v2h-2v-2zm0-4h2v2h-2v-2zm0-4h2v2h-2V10zm0-4h2v2h-2V6z"/>
+  </svg>
+);
+
+const Package = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M21 13v10h-6v-6h-6v6H3V13l9-9 9 9zm-9-2l-7 7v2h5v-4h4v4h5v-2l-7-7z"/>
+  </svg>
+);
+
+// Waste type icons with Lucide
+const WasteIcons = {
+  Plastic: <Recycle className="w-5 h-5 text-blue-600" />,
+  Organic: <Leaf className="w-5 h-5 text-green-600" />,
+  "E-Waste": <Monitor className="w-5 h-5 text-purple-600" />,
+  Scrap: <Hammer className="w-5 h-5 text-orange-600" />,
+  Default: <Package className="w-5 h-5 text-gray-600" />
+};
 
 export default function AcceptedPickups() {
   const [pickups, setPickups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [agentLocation, setAgentLocation] = useState(null);
   const [selectedPickup, setSelectedPickup] = useState(null);
   const [mapPickup, setMapPickup] = useState(null);
-  const [agentLocation, setAgentLocation] = useState(null);
-  const [error, setError] = useState("");
   const [markingPicked, setMarkingPicked] = useState(false);
-  const [todayPickupsModal, setTodayPickupsModal] = useState(false);
   const [todayPickupsCount, setTodayPickupsCount] = useState(0);
+  const [showTodayModal, setShowTodayModal] = useState(false);
 
   const navigate = useNavigate();
+
+  // Normalize coordinates for all pickups
+  const normalize = (pickup) => {
+    let coords = null;
+    if (pickup.user?.location_coords) {
+      coords = { lat: pickup.user.location_coords.lat, lng: pickup.user.location_coords.lng };
+    } else if (pickup.user?.coords) {
+      coords = { lat: pickup.user.coords.latitude, lng: pickup.user.coords.longitude };
+    }
+    return { ...pickup, coords };
+  };
 
   const fetchAcceptedPickups = async () => {
     setLoading(true);
     setError("");
-    
     try {
       const res = await getAcceptedPickups();
-      if (res?.success) {
-        const pickupData = res.data || [];
-        setPickups(pickupData);
+      if (res?.success && res.data) {
+        const household = Array.isArray(res.data.household) ? res.data.household : [];
+        const industrial = Array.isArray(res.data.industrial) ? res.data.industrial : [];
+        const normalized = [...household, ...industrial].map(normalize);
+        setPickups(normalized);
         
-        // Calculate today's pickups
+        // Count today's pickups
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const todayPickups = pickupData.filter(pickup => {
-          const pickupDate = new Date(pickup.sheduled_date);
+        const todayPickups = normalized.filter(pickup => {
+          const pickupDate = new Date(pickup.scheduled_date);
           pickupDate.setHours(0, 0, 0, 0);
           return pickupDate.getTime() === today.getTime();
         });
         setTodayPickupsCount(todayPickups.length);
-        
-        // Show modal if there are pickups for today
         if (todayPickups.length > 0) {
-          setTodayPickupsModal(true);
+          setShowTodayModal(true);
         }
       } else {
-        setError(res?.message || "Failed to fetch accepted pickups");
+        setPickups([]);
+        setError(res?.message || "No pickups found");
       }
     } catch (err) {
-      setError("An error occurred while loading pickups");
+      console.error(err);
+      setError("Failed to load pickups.");
+      setPickups([]);
     } finally {
       setLoading(false);
     }
@@ -62,72 +131,40 @@ export default function AcceptedPickups() {
 
   useEffect(() => {
     fetchAcceptedPickups();
-
-    // Get agent's current location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setAgentLocation([position.coords.latitude, position.coords.longitude]);
-        },
-        (err) => {
-          console.error("Location access denied", err);
-          setError("Location access is required to view pickup locations and optimize routes");
-        }
+        (pos) => setAgentLocation([pos.coords.latitude, pos.coords.longitude]),
+        () => setError("Location access required to show routes.")
       );
-    } else {
-      setError("Geolocation is not supported by your browser");
     }
   }, []);
 
-  const handleMarkPicked = async (pickupId) => {
-    setMarkingPicked(true);
-    setError("");
-    
-    try {
-      const res = await markPickupAsPicked(pickupId);
-      if (res?.success) {
-        setSelectedPickup(null);
-        fetchAcceptedPickups();
-        navigate(`/ecoagent/rating/${pickupId}`);
-      } else {
-        setError(res?.message || "Failed to update pickup");
-      }
-    } catch (err) {
-      setError("An error occurred while marking pickup as picked");
-    } finally {
-      setMarkingPicked(false);
-    }
-  };
+  // Helpers
+  const isIndustrialPickup = (pickup) =>
+    pickup.pickup_type === "industrial" ||
+    (pickup.user && (pickup.user.licence || pickup.user.industry_name));
 
   const calculateDistance = (pickupLocation) => {
     if (!agentLocation || !pickupLocation) return null;
-    
-    const R = 6371; // Earth's radius in kilometers
-    const lat1 = agentLocation[0] * Math.PI / 180;
-    const lat2 = pickupLocation.lat * Math.PI / 180;
-    const deltaLat = (pickupLocation.lat - agentLocation[0]) * Math.PI / 180;
-    const deltaLng = (pickupLocation.lng - agentLocation[1]) * Math.PI / 180;
-    
-    const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const R = 6371;
+    const lat1 = (agentLocation[0] * Math.PI) / 180;
+    const lat2 = (pickupLocation.lat * Math.PI) / 180;
+    const deltaLat = ((pickupLocation.lat - agentLocation[0]) * Math.PI) / 180;
+    const deltaLng = ((pickupLocation.lng - agentLocation[1]) * Math.PI) / 180;
+    const a =
+      Math.sin(deltaLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
-    
     return distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`;
   };
 
   const getDaysUntilPickup = (scheduledDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
     const pickupDate = new Date(scheduledDate);
     pickupDate.setHours(0, 0, 0, 0);
-    
-    const diffTime = pickupDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays;
+    return Math.ceil((pickupDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   };
 
   const getDaysStatus = (days) => {
@@ -137,15 +174,27 @@ export default function AcceptedPickups() {
     return { text: `${days} days left`, color: "text-blue-600 bg-blue-100" };
   };
 
-  const getWasteIcon = (wasteType) => {
-    switch (wasteType) {
-      case 'Plastic': return <Recycle className="w-5 h-5 text-blue-600" />;
-      case 'Organic': return <Leaf className="w-5 h-5 text-green-600" />;
-      case 'E-Waste': return <Monitor className="w-5 h-5 text-purple-600" />;
-      case 'Scrap': return <Hammer className="w-5 h-5 text-orange-600" />;
-      default: return <Package className="w-5 h-5 text-gray-600" />;
+  const handleMarkPicked = async (pickupId) => {
+    setMarkingPicked(true);
+    try {
+      const res = await markPickupAsPicked(pickupId);
+      if (res.success) {
+        setSelectedPickup(null);
+        fetchAcceptedPickups();
+        navigate(`/ecoagent/rating/${pickupId}`);
+      } else {
+        setError(res.message || "Failed to update pickup");
+      }
+    } catch {
+      setError("Error marking pickup as picked");
+    } finally {
+      setMarkingPicked(false);
     }
   };
+
+  // Split pickups
+  const householdPickups = pickups.filter((p) => !isIndustrialPickup(p));
+  const industrialPickups = pickups.filter((p) => isIndustrialPickup(p));
 
   if (loading) {
     return (
@@ -157,6 +206,110 @@ export default function AcceptedPickups() {
       </div>
     );
   }
+
+  const renderPickupCard = (pickup) => {
+    const distance = pickup.coords ? calculateDistance(pickup.coords) : null;
+    const daysUntil = getDaysUntilPickup(pickup.scheduled_date);
+    const daysStatus = getDaysStatus(daysUntil);
+    const isIndustrial = isIndustrialPickup(pickup);
+
+    return (
+      <div
+        key={pickup._id}
+        className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-emerald-100 group hover:-translate-y-1"
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Pickup #{pickup._id.slice(-6).toUpperCase()}
+          </h2>
+          <div className="flex items-center space-x-2">
+            {isIndustrial ? (
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Building2 className="w-4 h-4 text-purple-600" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <Home className="w-4 h-4 text-emerald-600" />
+              </div>
+            )}
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              {WasteIcons[pickup.waste_type] || WasteIcons.Default}
+            </div>
+          </div>
+        </div>
+
+        <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mb-4 ${daysStatus.color}`}>
+          <Timer className="w-3 h-3 mr-1" /> {daysStatus.text}
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center space-x-2 text-sm">
+            <User className="w-4 h-4 text-gray-600" />
+            <span className="font-medium text-gray-900">{pickup.user?.full_name || pickup.user?.industry_name || "Unknown User"}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <Phone className="w-4 h-4 text-gray-600" />
+            <span className="text-gray-600">{pickup.user?.mobile_number || pickup.user?.phone || "N/A"}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <MapPin className="w-4 h-4 text-gray-600" />
+            <span className="text-gray-600 truncate">{pickup.user?.address || pickup.user?.localbody_name || "N/A"}</span>
+          </div>
+          {distance && (
+            <div className="flex items-center space-x-2 text-sm">
+              <Navigation className="w-4 h-4 text-blue-600" />
+              <span className="text-blue-600 font-medium">{distance} away</span>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2 text-sm mb-4">
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-4 h-4 text-blue-600" />
+            <span className="text-gray-600">
+              {new Date(pickup.scheduled_date).toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Clock className="w-4 h-4 text-purple-600" />
+            <span className="text-gray-600">{pickup.scheduled_time}</span>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+            isIndustrial ? "bg-purple-100 text-purple-700" : "bg-emerald-100 text-emerald-700"
+          }`}>
+            {isIndustrial ? "Industrial" : "Household"}
+          </span>
+        </div>
+
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setSelectedPickup(pickup)}
+            className="flex-1 bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+          >
+            View Details
+          </button>
+          <button
+            onClick={() => setMapPickup(pickup)}
+            disabled={!pickup.coords || !agentLocation}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
+              pickup.coords && agentLocation
+                ? "bg-purple-500 text-white hover:bg-purple-600"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            View Route
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50 py-8 px-4">
@@ -178,126 +331,12 @@ export default function AcceptedPickups() {
           </div>
         )}
 
-        {pickups.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-2xl mx-auto">
-            <CheckCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Accepted Pickups</h3>
-            <p className="text-gray-600 mb-6">You haven't accepted any pickup assignments yet.</p>
-            <button 
-              onClick={() => navigate('/ecoagent/pickups/new')}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
-            >
-              View New Pickups
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pickups.map((pickup) => {
-              const hasValidCoords = pickup.user?.location_coords?.lat != null && pickup.user?.location_coords?.lng != null;
-              const distance = hasValidCoords ? calculateDistance(pickup.user.location_coords) : null;
-              const daysUntilPickup = getDaysUntilPickup(pickup.sheduled_date);
-              const daysStatus = getDaysStatus(daysUntilPickup);
-
-              return (
-                <div
-                  key={pickup._id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-emerald-100"
-                >
-                  {/* Pickup Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      Pickup #{pickup._id.slice(-6).toUpperCase()}
-                    </h2>
-                    <div className="flex items-center space-x-2">
-                      {getWasteIcon(pickup.waste_type)}
-                    </div>
-                  </div>
-
-                  {/* Days Until Pickup Badge */}
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mb-3 ${daysStatus.color}`}>
-                    <Timer className="w-3 h-3 mr-1" />
-                    {daysStatus.text}
-                  </div>
-
-                  {/* User Info */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <User className="w-4 h-4 text-gray-600" />
-                      <span className="font-medium text-gray-900">{pickup.user?.full_name || "Unknown User"}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Phone className="w-4 h-4 text-gray-600" />
-                      <span className="text-gray-600">{pickup.user?.mobile_number || "N/A"}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <MapPin className="w-4 h-4 text-gray-600" />
-                      <span className="text-gray-600 truncate">{pickup.user?.address || "N/A"}</span>
-                    </div>
-                    {distance && (
-                      <div className="flex items-center space-x-2 text-sm">
-                        <Navigation className="w-4 h-4 text-blue-600" />
-                        <span className="text-blue-600 font-medium">{distance} away</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Schedule Info */}
-                  <div className="space-y-2 text-sm mb-4">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-blue-600" />
-                      <span className="text-gray-600">
-                        {new Date(pickup.sheduled_date).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-purple-600" />
-                      <span className="text-gray-600">{pickup.scheduled_time}</span>
-                    </div>
-                  </div>
-
-                  {/* Waste Type Badge */}
-                  <div className="mb-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                      {pickup.waste_type}
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setSelectedPickup(pickup)}
-                      className="flex-1 bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => setMapPickup(pickup)}
-                      disabled={!hasValidCoords || !agentLocation}
-                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
-                        hasValidCoords && agentLocation
-                          ? "bg-purple-500 text-white hover:bg-purple-600"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
-                    >
-                      View Route
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* Today's Pickups Modal */}
-        {todayPickupsModal && todayPickupsCount > 0 && (
+        {showTodayModal && todayPickupsCount > 0 && (
           <div className="fixed inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
               <button
-                onClick={() => setTodayPickupsModal(false)}
+                onClick={() => setShowTodayModal(false)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
               >
                 <X className="w-6 h-6" />
@@ -305,7 +344,7 @@ export default function AcceptedPickups() {
 
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-4 mx-auto">
-                  <Bell className="w-8 h-8 text-green-600" />
+                  <Award className="w-8 h-8 text-green-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Today's Pickups</h2>
                 <p className="text-gray-600 mb-6">
@@ -318,7 +357,7 @@ export default function AcceptedPickups() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setTodayPickupsModal(false)}
+                  onClick={() => setShowTodayModal(false)}
                   className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
                 >
                   Got it! Let's get started
@@ -328,11 +367,55 @@ export default function AcceptedPickups() {
           </div>
         )}
 
+        {/* Household Pickups */}
+        {householdPickups.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mr-3">
+                <Home className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Household Pickups</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {householdPickups.map(renderPickupCard)}
+            </div>
+          </div>
+        )}
+
+        {/* Industrial Pickups */}
+        {industrialPickups.length > 0 && (
+          <div>
+            <div className="flex items-center mb-6">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-3">
+                <Building2 className="w-6 h-6 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Industrial Pickups</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {industrialPickups.map(renderPickupCard)}
+            </div>
+          </div>
+        )}
+
+        {/* No pickups */}
+        {householdPickups.length === 0 && industrialPickups.length === 0 && (
+          <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-2xl mx-auto">
+            <CheckCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Accepted Pickups</h3>
+            <p className="text-gray-600 mb-6">You haven't accepted any pickup assignments yet.</p>
+            <button 
+              onClick={() => navigate('/ecoagent/pickups/new')}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
+            >
+              View New Pickups
+            </button>
+          </div>
+        )}
+
         {/* Details Modal */}
         {selectedPickup && (
           <div className="fixed inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedPickup(null)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -345,16 +428,15 @@ export default function AcceptedPickups() {
               </h2>
 
               {/* Days Until Pickup in Modal */}
-              {selectedPickup.sheduled_date && (
+              {selectedPickup.scheduled_date && (
                 <div className="mb-4 text-center">
-                  <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getDaysStatus(getDaysUntilPickup(selectedPickup.sheduled_date)).color}`}>
+                  <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getDaysStatus(getDaysUntilPickup(selectedPickup.scheduled_date)).color}`}>
                     <Timer className="w-4 h-4 mr-2" />
-                    {getDaysStatus(getDaysUntilPickup(selectedPickup.sheduled_date)).text}
+                    {getDaysStatus(getDaysUntilPickup(selectedPickup.scheduled_date)).text}
                   </div>
                 </div>
               )}
 
-              {/* User Information */}
               <div className="space-y-4 mb-6">
                 <div className="border-b border-gray-200 pb-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
@@ -364,17 +446,13 @@ export default function AcceptedPickups() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600 font-medium">Name:</span>
-                      <span className="text-gray-900">{selectedPickup.user?.full_name || "N/A"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 font-medium">Email:</span>
-                      <span className="text-gray-900">{selectedPickup.user?.email || "N/A"}</span>
+                      <span className="text-gray-900">{selectedPickup.user?.full_name || selectedPickup.user?.industry_name || "N/A"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 font-medium">Phone:</span>
                       <span className="text-gray-900 flex items-center">
                         <Phone className="w-4 h-4 mr-1 text-gray-600" />
-                        {selectedPickup.user?.mobile_number || "N/A"}
+                        {selectedPickup.user?.mobile_number || selectedPickup.user?.phone || "N/A"}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -387,7 +465,6 @@ export default function AcceptedPickups() {
                   </div>
                 </div>
 
-                {/* Pickup Information */}
                 <div className="border-b border-gray-200 pb-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
                     <Truck className="w-5 h-5 mr-2 text-green-600" />
@@ -401,7 +478,7 @@ export default function AcceptedPickups() {
                     <div className="flex justify-between">
                       <span className="text-gray-600 font-medium">Scheduled Date:</span>
                       <span className="text-gray-900">
-                        {new Date(selectedPickup.sheduled_date).toLocaleDateString('en-US', {
+                        {new Date(selectedPickup.scheduled_date).toLocaleDateString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
@@ -424,31 +501,24 @@ export default function AcceptedPickups() {
                   </div>
                 </div>
 
-                {/* Payment Information */}
-                {selectedPickup.payment && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                      <CreditCard className="w-5 h-5 mr-2 text-orange-600" />
-                      Payment Details
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Status:</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          selectedPickup.payment.status === 'succeeded' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {selectedPickup.payment.status}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Amount:</span>
-                        <span className="text-gray-900">₹{(selectedPickup.payment.amount / 100).toFixed(2)}</span>
-                      </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <Home className="w-5 h-5 mr-2 text-gray-600" />
+                    Pickup Type
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 font-medium">Type:</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        isIndustrialPickup(selectedPickup)
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        {isIndustrialPickup(selectedPickup) ? "Industrial" : "Household"}
+                      </span>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Error in Modal */}
@@ -490,87 +560,97 @@ export default function AcceptedPickups() {
         )}
 
         {/* Map Modal */}
-        {mapPickup && agentLocation && mapPickup.user?.location_coords && (
-          <div className="fixed inset-0 bg-black/50 bg-opacity-60 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-6 relative">
-              {/* Close Button */}
-              <button
-                onClick={() => setMapPickup(null)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
-              >
-                <X className="w-6 h-6" />
-              </button>
+        {mapPickup && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[500px] relative overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white p-4 flex justify-between items-center">
+                <h3 className="text-lg font-bold flex items-center">
+                  <Navigation className="w-5 h-5 mr-2" />
+                  Route to Pickup
+                </h3>
+                <button
+                  onClick={() => setMapPickup(null)}
+                  className="text-white hover:text-emerald-100 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
 
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                Route to Pickup Location
-              </h2>
-              
-              {/* Days Until Pickup in Map Modal */}
-              {mapPickup.sheduled_date && (
-                <div className="mb-4 text-center">
-                  <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getDaysStatus(getDaysUntilPickup(mapPickup.sheduled_date)).color}`}>
-                    <Timer className="w-4 h-4 mr-2" />
-                    {getDaysStatus(getDaysUntilPickup(mapPickup.sheduled_date)).text}
+              {/* Pickup Info Bar */}
+              <div className="p-3 bg-gray-50 border-b border-gray-200">
+                <div className="flex justify-between items-center text-sm">
+                  <div className="font-medium text-gray-900">
+                    {mapPickup.user?.full_name || mapPickup.user?.industry_name}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      isIndustrialPickup(mapPickup)
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}>
+                      {isIndustrialPickup(mapPickup) ? "Industrial" : "Household"}
+                    </span>
+                    <span className="text-gray-600">
+                      {WasteIcons[mapPickup.waste_type] || WasteIcons.Default}
+                    </span>
                   </div>
                 </div>
-              )}
-              
-              <div className="mb-4 p-3 bg-emerald-50 rounded-lg">
-                <p className="text-sm text-emerald-700 font-medium">
-                  <Navigation className="w-4 h-4 inline mr-1" />
-                  Distance: {calculateDistance(mapPickup.user.location_coords)} • 
-                  Estimated travel time: {calculateDistance(mapPickup.user.location_coords)?.includes('m') ? '2-3 min' : '10-15 min'}
-                </p>
+                <div className="text-xs text-gray-600 mt-1 flex items-center">
+                  <MapPin className="w-3 h-3 mr-1" />
+                  {mapPickup.user?.address || "Address not available"}
+                </div>
               </div>
 
-              <div className="h-96 w-full rounded-xl overflow-hidden border border-gray-300">
-                <MapContainer
-                  center={agentLocation}
-                  zoom={14}
-                  scrollWheelZoom={true}
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-                  <Marker position={agentLocation}>
-                    <Popup>Your Current Location</Popup>
-                  </Marker>
-                  <Marker
-                    position={[
-                      mapPickup.user.location_coords.lat,
-                      mapPickup.user.location_coords.lng,
-                    ]}
+              {/* Map Container */}
+              <div className="h-[calc(100%-110px)] w-full">
+                {mapPickup.coords && agentLocation ? (
+                  <MapContainer
+                    center={agentLocation}
+                    zoom={14}
+                    scrollWheelZoom={true}
+                    className="w-full h-full rounded-xl overflow-hidden"
                   >
-                    <Popup>
-                      <div>
-                        <h3 className="font-bold">{mapPickup.user?.full_name}</h3>
-                        <p className="text-sm">{mapPickup.waste_type} Pickup</p>
-                        <p className="text-xs mt-1">{mapPickup.user?.address}</p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                  <Polyline
-                    positions={[
-                      agentLocation,
-                      [
-                        mapPickup.user.location_coords.lat,
-                        mapPickup.user.location_coords.lng,
-                      ],
-                    ]}
-                    color="#10b981"
-                    weight={4}
-                    opacity={0.8}
-                  />
-                </MapContainer>
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <Marker position={agentLocation}>
+                      <Popup className="font-medium">Your Location</Popup>
+                    </Marker>
+                    <Marker position={[mapPickup.coords.lat, mapPickup.coords.lng]}>
+                      <Popup className="font-medium">
+                        <div>Pickup Location</div>
+                        <div className="text-xs mt-1">{mapPickup.waste_type}</div>
+                      </Popup>
+                    </Marker>
+                    <Polyline
+                      positions={[
+                        agentLocation,
+                        [mapPickup.coords.lat, mapPickup.coords.lng]
+                      ]}
+                      color="#10b981"
+                      weight={4}
+                      opacity={0.8}
+                    />
+                  </MapContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center bg-gray-100">
+                    <p className="text-gray-500">Location data unavailable</p>
+                  </div>
+                )}
               </div>
 
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600">
-                  Navigate to the pickup location using your preferred navigation app
-                </p>
-              </div>
+              {/* Distance & ETA Footer */}
+              {mapPickup.coords && agentLocation && (
+                <div className="p-3 bg-emerald-50 border-t border-emerald-100 text-center">
+                  <p className="text-sm text-emerald-700 font-medium">
+                    <Navigation className="w-4 h-4 inline mr-1" />
+                    Distance: {calculateDistance(mapPickup.coords)} • 
+                    Estimated travel time: {calculateDistance(mapPickup.coords)?.includes('m') ? '2-3 min' : '10-15 min'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -579,46 +659,3 @@ export default function AcceptedPickups() {
   );
 }
 
-// Helper components for icons
-const Recycle = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2C8.5 2 5.7 4.8 5.7 8.3c0 2.1 1.1 4 2.8 5.2l1.5 1c.4.3.9.3 1.3 0l1.5-1c1.7-1.2 2.8-3.1 2.8-5.2 0-3.5-2.8-6.3-6.3-6.3zm0 10.5c-1.3 0-2.4-1.1-2.4-2.4s1.1-2.4 2.4-2.4 2.4 1.1 2.4 2.4-1.1 2.4-2.4 2.4z"/>
-  </svg>
-);
-
-const Leaf = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2C8.5 2 5.7 4.8 5.7 8.3c0 2.1 1.1 4 2.8 5.2l1.5 1c.4.3.9.3 1.3 0l1.5-1c1.7-1.2 2.8-3.1 2.8-5.2 0-3.5-2.8-6.3-6.3-6.3zm0 10.5c-1.3 0-2.4-1.1-2.4-2.4s1.1-2.4 2.4-2.4 2.4 1.1 2.4 2.4-1.1 2.4-2.4 2.4z"/>
-  </svg>
-);
-
-const Monitor = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M20 3H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h6l-2 3v1h8v-1l-2-3h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H4V5h16v10z"/>
-  </svg>
-);
-
-const Hammer = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M5 18h2v2H5v-2zm0-4h2v2H5v-2zm0-4h2v2H5V10zm0-4h2v2H5V6zm4 12h2v2H9v-2zm0-4h2v2H9v-2zm0-4h2v2H9V10zm0-4h2v2H9V6zm4 12h2v2h-2v-2zm0-4h2v2h-2v-2zm0-4h2v2h-2V10zm0-4h2v2h-2V6z"/>
-  </svg>
-);
-
-const Package = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M21 13v10h-6v-6h-6v6H3V13l9-9 9 9zm-9-2l-7 7v2h5v-4h4v4h5v-2l-7-7z"/>
-  </svg>
-);
-
-const X = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
-const CreditCard = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-    <line x1="1" y1="10" x2="23" y2="10"></line>
-  </svg>
-);

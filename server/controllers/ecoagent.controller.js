@@ -209,6 +209,7 @@ const acceptPickup = async (req, res) => {
 // GET /ecoagent/pickups/accepted
 const getAcceptedPickups = async (req, res) => {
   try {
+    console.log("ping")
     if (!req.session?.agent || !req.session.agent.agent_id) {
       return res
         .status(401)
@@ -217,14 +218,51 @@ const getAcceptedPickups = async (req, res) => {
 
     const agentId = req.session.agent.agent_id;
 
-    const pickups = await Pickup.find({ agent: agentId, status: "accepted" })
-      .populate("user", "full_name email location_coords address mobile_number")
-      .populate("payment", "status amount");
+    // Fetch accepted household pickups
+    const householdPickups = await Pickup.find({
+      agent: agentId,
+      status: "accepted",
+      pickup_type: "household",
+    });
+
+    const householdUserIds = householdPickups.map(p => p.user);
+
+    // Fetch household user details
+    const householdUsers = await User.find({
+      _id: { $in: householdUserIds }
+    }).select("_id full_name email location_coords address mobile_number");
+
+    const householdPickupsWithUser = householdPickups.map(p => {
+      const user = householdUsers.find(u => u._id.equals(p.user));
+      return { ...p.toObject(), user };
+    });
+
+    // Fetch accepted industrial pickups
+    const industrialPickups = await Pickup.find({
+      agent: agentId,
+      status: "accepted",
+      pickup_type: "industrial",
+    });
+
+    const industrialUserIds = industrialPickups.map(p => p.user);
+
+    // Fetch industrial user details
+    const industrialUsers = await Industry.find({
+      _id: { $in: industrialUserIds }
+    }).select("_id industry_name address phone district localbody_name localbody_type");
+
+    const industrialPickupsWithUser = industrialPickups.map(p => {
+      const user = industrialUsers.find(u => u._id.equals(p.user));
+      return { ...p.toObject(), user };
+    });
 
     res.status(200).json({
       success: true,
       message: "Accepted pickups fetched successfully",
-      data: pickups,
+      data: {
+        household: householdPickupsWithUser,
+        industrial: industrialPickupsWithUser,
+      },
     });
   } catch (error) {
     console.error("Error fetching accepted pickups:", error);
