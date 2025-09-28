@@ -25,41 +25,100 @@ export default function RegisterPage() {
 
     const handleForm = async (e) => {
       e.preventDefault();
-      setIsLoading(true);
       setError("");
+      setIsLoading(true);
 
-      const housename = e.target.house.value;
-      const street = e.target.street.value;
-      const town = e.target.town.value;
-      const pin = e.target.pin.value;
-      const address = `${housename},${street},${town} PIN:${pin}`;
+      const name = e.target.name.value.trim();
+      const email = e.target.email.value.trim();
+      const password = e.target.password.value;
+      const confirmPassword = e.target.confirm.value;
+      const adhaar = e.target.adhaar.value.trim();
+      const mobile = e.target.mobile.value.trim();
+      const house = e.target.house.value.trim();
+      const street = e.target.street.value.trim();
+      const town = e.target.town.value.trim();
+      const pin = e.target.pin.value.trim();
+      const districtVal = e.target.district.value;
+      const localbodyTypeVal = e.target.localbodytype.value;
+      const localbodyName = e.target.localbodyname.value;
+
+      const address = `${house}, ${street}, ${town} PIN:${pin}`;
+
+      // Regex patterns
+      const nameRegex = /^[A-Za-z\s]{2,}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+      const mobileRegex = /^[6-9]\d{9}$/;
+      const adhaarRegex = /^\d{12}$/;
+      const pinRegex = /^\d{6}$/;
+      const addressRegex = /^[A-Za-z0-9\s,.-]{2,}$/;
+
+      // Mandatory fields check
+      if (!name || !email || !password || !confirmPassword || !adhaar || !mobile || !house || !street || !town || !pin || !districtVal || !localbodyTypeVal || !localbodyName) {
+          setIsLoading(false);
+          return setError("All fields are required.");
+      }
+
+      // Field validations
+      if (!nameRegex.test(name)) {
+          setIsLoading(false);
+          return setError("Full name must be at least 2 letters and only contain letters and spaces.");
+      }
+      if (!emailRegex.test(email)) {
+          setIsLoading(false);
+          return setError("Invalid email address.");
+      }
+      if (!passwordRegex.test(password)) {
+          setIsLoading(false);
+          return setError("Password must be at least 6 characters, include uppercase, lowercase, and a number.");
+      }
+      if (password !== confirmPassword) {
+          setIsLoading(false);
+          return setError("Passwords do not match.");
+      }
+      if (!mobileRegex.test(mobile)) {
+          setIsLoading(false);
+          return setError("Mobile number must be 10 digits starting with 6-9.");
+      }
+      if (!adhaarRegex.test(adhaar)) {
+          setIsLoading(false);
+          return setError("Aadhaar number must be exactly 12 digits.");
+      }
+      if (!pinRegex.test(pin)) {
+          setIsLoading(false);
+          return setError("PIN code must be exactly 6 digits.");
+      }
+      if (!addressRegex.test(house) || !addressRegex.test(street) || !addressRegex.test(town)) {
+          setIsLoading(false);
+          return setError("Address fields can contain letters, numbers, spaces, commas, periods, or hyphens.");
+      }
 
       const payload = {
-        full_name: e.target.name.value,
-        email: e.target.email.value,
-        password: e.target.password.value,
-        adhaar: e.target.adhaar.value,
-        mobile_number: e.target.mobile.value,
-        address: address,
-        district: e.target.district.value,
-        localbody_type: e.target.localbodytype.value,
-        localbody_name: e.target.localbodyname.value
+          full_name: name,
+          email,
+          password,
+          adhaar,
+          mobile_number: mobile,
+          address,
+          district: districtVal,
+          localbody_type: localbodyTypeVal,
+          localbody_name: localbodyName
       };
-       
+
       try {
-        const res = await userRegistration(payload);
-        setIsLoading(false);
-        
-        if (res?.success) {
-            navigate("/home");
-        } else {
-            setError(res?.message || "Failed to Register!");
-        }
+          const res = await userRegistration(payload);
+          setIsLoading(false);
+
+          if (res?.success) {
+              navigate("/home");
+          } else {
+              setError(res?.message || "Failed to Register!");
+          }
       } catch (err) {
-        setIsLoading(false);
-        setError("An unexpected error occurred. Please try again.");
+          setIsLoading(false);
+          setError("An unexpected error occurred. Please try again.");
       }
-    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50 flex items-center justify-center p-4">
