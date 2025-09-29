@@ -98,19 +98,6 @@ export default function Dashboard() {
           <p className="text-gray-400">Manage your waste management platform with full control</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                {stat.icon}
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-gray-400 text-sm">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Admin Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
           {adminCards.map((card, index) => (
@@ -126,67 +113,6 @@ export default function Dashboard() {
               <p className="text-gray-400 leading-relaxed text-sm">{card.description}</p>
             </div>
           ))}
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-            <Clock className="w-6 h-6 mr-2 text-blue-400" />
-            Recent Activity
-          </h2>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-700/30 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                <div className="flex-1">
-                  <p className="text-white text-sm">{activity.action}</p>
-                  <p className="text-gray-400 text-xs mt-1">{activity.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* System Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
-              System Performance
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-400">API Response Time</span>
-                  <span className="text-white">124ms</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div className="bg-green-500 h-2 rounded-full w-3/4"></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-400">Database Load</span>
-                  <span className="text-white">32%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full w-1/3"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-              <AlertCircle className="w-5 h-5 mr-2 text-yellow-400" />
-              System Alerts
-            </h3>
-            <div className="text-gray-400 text-sm">
-              <p className="mb-2">✅ All systems operational</p>
-              <p className="mb-2">✅ Database backup completed</p>
-              <p>✅ Security scan passed</p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
