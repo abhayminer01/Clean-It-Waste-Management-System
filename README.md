@@ -124,4 +124,4 @@ The app should now be running at:
 Contributions are welcome! Please fork the repo and submit a pull request. Follow contribution guidelines.
 
 ## 📜 License
-This project is liceneced by `Abhay V`. Using this idea without concent is punishable offence under copyright rules. Code is licenced under MIT. Free to use and modify
+This project is liceneced under MIT. Free to use and modify.
