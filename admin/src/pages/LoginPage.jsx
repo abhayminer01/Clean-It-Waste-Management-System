@@ -36,7 +36,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
             <Shield className="w-8 h-8 text-white" />
@@ -45,10 +44,8 @@ export default function LoginPage() {
           <p className="text-gray-400">Sign in to access your dashboard</p>
         </div>
 
-        {/* Login Form */}
         <form onSubmit={handleForm} className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-8 border border-gray-700 shadow-2xl">
           <div className="space-y-6">
-            {/* Error Message */}
             {error && (
               <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center">
                 <AlertCircle className="w-4 h-4 mr-2" />
@@ -56,7 +53,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
@@ -75,7 +71,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300">
@@ -99,7 +94,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -120,7 +114,6 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Security Notice */}
         <div className="mt-6 text-center">
           <div className="inline-flex items-center bg-gray-800/50 border border-gray-700 rounded-full px-4 py-2">
             <Shield className="w-4 h-4 text-green-400 mr-2" />

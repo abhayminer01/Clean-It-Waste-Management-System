@@ -71,7 +71,6 @@ export default function ManageEcoagent() {
 
   const copyId = (id) => {
     navigator.clipboard.writeText(id.slice(-6));
-    // Optional: Show temporary success message instead of alert
     const successMsg = document.createElement('div');
     successMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
     successMsg.textContent = 'Agent ID copied: ' + id.slice(-6);
@@ -137,7 +136,6 @@ export default function ManageEcoagent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
@@ -154,7 +152,6 @@ export default function ManageEcoagent() {
           </button>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6 max-w-2xl mx-auto">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -181,7 +178,6 @@ export default function ManageEcoagent() {
                 key={agent._id}
                 className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 hover:shadow-xl transition-all duration-300"
               >
-                {/* Agent Header */}
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white flex items-center">
                     <User className="w-5 h-5 mr-2 text-green-400" />
@@ -192,7 +188,6 @@ export default function ManageEcoagent() {
                   </span>
                 </div>
 
-                {/* Agent Details */}
                 <div className="space-y-3 mb-4 text-sm">
                   <div className="flex items-start space-x-2">
                     <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
@@ -225,7 +220,6 @@ export default function ManageEcoagent() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex justify-between items-center pt-4">
                   <button
                     onClick={() => copyId(agent._id)}
@@ -263,7 +257,6 @@ export default function ManageEcoagent() {
           </div>
         )}
 
-        {/* Summary Stats */}
         {agents.length > 0 && (
           <div className="mt-8 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
             <div className="flex items-center justify-between">
@@ -371,7 +364,6 @@ export default function ManageEcoagent() {
   );
 }
 
-// Helper component for X icon
 const X = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

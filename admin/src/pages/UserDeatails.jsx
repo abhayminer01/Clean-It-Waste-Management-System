@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getUserById, updateUser } from "../services/api";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Home, 
-  MapPin, 
-  Building2, 
-  Loader2, 
-  AlertCircle, 
-  CheckCircle,
-  Save,
-  ArrowLeft
-} from 'lucide-react';
+import { User, Mail, Phone, Home, MapPin, Building2, Loader2, AlertCircle, CheckCircle, Save, ArrowLeft } from 'lucide-react';
 
 export default function UserDetails() {
   const { id } = useParams();
@@ -99,7 +87,6 @@ export default function UserDetails() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
         <div className="flex items-center mb-8">
           <button
             onClick={() => navigate("/users/manage")}
@@ -119,7 +106,6 @@ export default function UserDetails() {
           </div>
         </div>
 
-        {/* Messages */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -136,7 +122,6 @@ export default function UserDetails() {
 
         <form onSubmit={handleSubmit} className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-8 border border-gray-700 shadow-2xl">
           <div className="space-y-6">
-            {/* Personal Information Section */}
             <div className="border-b border-gray-700 pb-6">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <User className="w-5 h-5 mr-2 text-blue-400" />
@@ -194,7 +179,6 @@ export default function UserDetails() {
               </div>
             </div>
 
-            {/* Address Section */}
             <div className="border-b border-gray-700 pb-6">
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <Home className="w-5 h-5 mr-2 text-emerald-400" />
@@ -219,7 +203,6 @@ export default function UserDetails() {
               </div>
             </div>
 
-            {/* Location Section */}
             <div>
               <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <MapPin className="w-5 h-5 mr-2 text-orange-400" />
@@ -276,7 +259,6 @@ export default function UserDetails() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex space-x-4 pt-6">
               <button
                 type="button"

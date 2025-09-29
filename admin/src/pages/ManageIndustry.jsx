@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getIndustries } from "../services/api";
-import { 
-  Building2, 
-  Mail, 
-  FileText, 
-  MapPin, 
-  UserCheck, 
-  Trash2, 
-  Send, 
-  Edit3, 
-  Loader2, 
-  AlertCircle, 
-  CheckCircle ,
-  Phone
-} from 'lucide-react';
+import { Building2, Mail, FileText, MapPin, UserCheck, Trash2, Send, Edit3, Loader2, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 
 export default function ManageIndustry() {
   const [industries, setIndustries] = useState([]);
@@ -141,7 +128,6 @@ export default function ManageIndustry() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4">
             <Building2 className="w-8 h-8 text-white" />
@@ -150,7 +136,6 @@ export default function ManageIndustry() {
           <p className="text-gray-400">View, edit, and manage all verified industrial user accounts</p>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6 max-w-2xl mx-auto">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -263,7 +248,6 @@ export default function ManageIndustry() {
                   </div>
                 ) : (
                   <>
-                    {/* Industry Header */}
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold text-white flex items-center">
                         <Building2 className="w-5 h-5 mr-2 text-blue-400" />
@@ -274,7 +258,6 @@ export default function ManageIndustry() {
                       </span>
                     </div>
 
-                    {/* Industry Details */}
                     <div className="space-y-3 mb-4 text-sm">
                       <div className="flex items-start space-x-2">
                         <Mail className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
@@ -319,7 +302,6 @@ export default function ManageIndustry() {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="grid grid-cols-3 gap-2 pt-4">
                       <button
                         onClick={() => handleDelete(ind._id)}
@@ -355,7 +337,6 @@ export default function ManageIndustry() {
           </div>
         )}
 
-        {/* Summary Stats */}
         {industries.length > 0 && (
           <div className="mt-8 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
             <div className="flex items-center justify-between">

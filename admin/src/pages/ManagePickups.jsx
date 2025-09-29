@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllPickups, deletePickup } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { 
-  Truck, 
-  Calendar, 
-  Clock, 
-  User, 
-  Trash2, 
-  Loader2, 
-  AlertCircle, 
-  CheckCircle,
-  MapPin,
-  Building2,
-  Home
-} from 'lucide-react';
+import { Truck, Calendar, Clock, User, Trash2, Loader2, AlertCircle, CheckCircle, MapPin, Building2, Home } from 'lucide-react';
 
 export default function ManagePickups() {
   const [pickups, setPickups] = useState([]);
@@ -93,7 +81,6 @@ export default function ManagePickups() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4">
             <Truck className="w-8 h-8 text-white" />
@@ -102,7 +89,6 @@ export default function ManagePickups() {
           <p className="text-gray-400">View and manage all scheduled waste collection pickups</p>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6 max-w-2xl mx-auto">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -129,7 +115,6 @@ export default function ManagePickups() {
                 key={pickup._id}
                 className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 hover:shadow-xl transition-all duration-300"
               >
-                {/* Pickup Header */}
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold text-white flex items-center">
                     <Truck className="w-5 h-5 mr-2 text-emerald-400" />
@@ -140,7 +125,6 @@ export default function ManagePickups() {
                   </span>
                 </div>
 
-                {/* Pickup Type Badge */}
                 <div className="mb-4">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                     isIndustrialPickup(pickup) ? "bg-purple-900 text-purple-200" : "bg-emerald-900 text-emerald-200"
@@ -153,7 +137,6 @@ export default function ManagePickups() {
                   </span>
                 </div>
 
-                {/* Pickup Details */}
                 <div className="space-y-3 mb-4 text-sm">
                   <div className="flex items-center space-x-2">
                     <Truck className="w-4 h-4 text-emerald-400" />
@@ -187,7 +170,6 @@ export default function ManagePickups() {
                   </div>
                 </div>
 
-                {/* User Information */}
                 <div className="mb-4 p-3 bg-gray-700/30 rounded-lg">
                   <div className="flex items-center space-x-2 mb-2">
                     <User className="w-4 h-4 text-gray-400" />
@@ -212,7 +194,6 @@ export default function ManagePickups() {
                   )}
                 </div>
 
-                {/* Delete Button */}
                 <button
                   onClick={() => handleDelete(pickup._id)}
                   disabled={deletingId === pickup._id}
@@ -230,7 +211,6 @@ export default function ManagePickups() {
           </div>
         )}
 
-        {/* Summary Stats */}
         {pickups.length > 0 && (
           <div className="mt-8 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
             <div className="flex items-center justify-between">

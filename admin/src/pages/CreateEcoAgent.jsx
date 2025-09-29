@@ -90,7 +90,6 @@ export default function CreateEcoAgent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl mb-4">
             <User className="w-8 h-8 text-white" />
@@ -99,7 +98,6 @@ export default function CreateEcoAgent() {
           <p className="text-gray-400">Register a new eco agent for waste collection assignments</p>
         </div>
 
-        {/* Messages */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -116,7 +114,6 @@ export default function CreateEcoAgent() {
 
         <form onSubmit={handleForm} className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-8 border border-gray-700 shadow-2xl">
           <div className="space-y-6">
-            {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 <User className="w-4 h-4 inline mr-1" />
@@ -131,7 +128,6 @@ export default function CreateEcoAgent() {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 <Lock className="w-4 h-4 inline mr-1" />
@@ -146,7 +142,6 @@ export default function CreateEcoAgent() {
               />
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 <Lock className="w-4 h-4 inline mr-1" />
@@ -161,7 +156,6 @@ export default function CreateEcoAgent() {
               />
             </div>
 
-            {/* District */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 <MapPin className="w-4 h-4 inline mr-1" />
@@ -186,7 +180,6 @@ export default function CreateEcoAgent() {
               </select>
             </div>
 
-            {/* Localbody Type */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 <Building2 className="w-4 h-4 inline mr-1" />
@@ -217,7 +210,6 @@ export default function CreateEcoAgent() {
               </select>
             </div>
 
-            {/* Localbody Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Localbody Name
@@ -237,7 +229,6 @@ export default function CreateEcoAgent() {
               </select>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}

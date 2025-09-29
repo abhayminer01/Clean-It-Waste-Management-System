@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllUsers, deleteUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Home, 
-  MapPin, 
-  Trash2, 
-  Loader2, 
-  AlertCircle, 
-  CheckCircle 
-} from 'lucide-react';
+import { User, Mail, Phone, Home, MapPin, Trash2, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -78,7 +68,6 @@ export default function ManageUsers() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4">
             <User className="w-8 h-8 text-white" />
@@ -87,7 +76,6 @@ export default function ManageUsers() {
           <p className="text-gray-400">View and manage all residential user accounts</p>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center mb-6 max-w-2xl mx-auto">
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -115,7 +103,6 @@ export default function ManageUsers() {
                 onClick={() => navigate(`/users/${user._id}`)}
                 className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 hover:shadow-xl transition-all duration-300 cursor-pointer group"
               >
-                {/* User Header */}
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold text-white flex items-center">
                     <User className="w-5 h-5 mr-2 text-blue-400" />
@@ -126,7 +113,6 @@ export default function ManageUsers() {
                   </span>
                 </div>
 
-                {/* User Details */}
                 <div className="space-y-3 mb-4 text-sm">
                   <div className="flex items-start space-x-2">
                     <Mail className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
@@ -163,7 +149,6 @@ export default function ManageUsers() {
                   </div>
                 </div>
 
-                {/* Delete Button */}
                 <button
                   onClick={(e) => handleDelete(e, user._id)}
                   disabled={deletingId === user._id}
@@ -181,7 +166,6 @@ export default function ManageUsers() {
           </div>
         )}
 
-        {/* Summary Stats */}
         {users.length > 0 && (
           <div className="mt-8 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
             <div className="flex items-center justify-between">
