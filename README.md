@@ -61,3 +61,67 @@ The system allows users to schedule waste pickups, rewards them with coins for p
 │── package.json
 │── README.md
 ```
+
+---
+
+## 🚀 Getting Started  
+
+### 🔹 Prerequisites  
+Make sure you have installed:  
+- [Node.js](https://nodejs.org/) >= 18  
+- [MongoDB](https://www.mongodb.com/) (local or Atlas)  
+- npm / yarn  
+
+---
+
+### 🔹 Clone the Repository  
+
+```bash
+git clone https://github.com/<your-username>/clean-it.git
+cd clean-it
+```
+
+### 🔹 Install Dependencies
+Backend :
+```bash
+cd server
+npm install
+```
+Frontend :
+```bash
+cd client
+npm install
+```
+
+### 🔹 Environment Variables
+Create a `.env` file inside `/server` with:
+```ini
+MONGO_URI=<your-mongodb-uri>
+SESSION_SECRET=<your-secret-key>
+PORT=5000
+```
+
+### 🔹 Run the App
+Backend :
+```bash
+cd server
+npm run dev
+```
+Frontend :
+```bash
+cd client
+npm run dev
+```
+
+The app should now be running at:
+
+- Frontend → http://localhost:3000
+
+- Backend API → http://localhost:5000
+
+
+## 🤝 Contributing
+Contributions are welcome! Please fork the repo and submit a pull request. Follow contribution guidelines.
+
+## 📜 License
+This project is liceneced by `Abhay V`. Using this idea without concent is punishable offence under copyright rules. Code is licenced under MIT. Free to use and modify
