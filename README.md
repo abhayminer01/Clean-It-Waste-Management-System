@@ -43,7 +43,7 @@ The system allows users to schedule waste pickups, rewards them with coins for p
 ---
 
 ## 📂 Project Structure  
-`yaml
+```yaml
 │── client/ # React frontend
 │ ├── src/
 │ │ ├── components/ # Reusable UI components
@@ -60,4 +60,4 @@ The system allows users to schedule waste pickups, rewards them with coins for p
 │
 │── package.json
 │── README.md
-`
+```
