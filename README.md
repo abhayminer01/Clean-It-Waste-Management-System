@@ -1,4 +1,4 @@
-# 🧹 Clean-It – Smart Waste Management System  
+# 🧹 Clean-It : Waste Management System  
 
 A full-stack MERN application designed to promote **eco-friendly waste management** for both **household** and **industrial users**.  
 The system allows users to schedule waste pickups, rewards them with coins for proper disposal, and enables **Eco Agents** to manage and process pickups in real time.  
