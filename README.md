@@ -96,9 +96,24 @@ npm install
 ### 🔹 Environment Variables
 Create a `.env` file inside `/server` with:
 ```ini
-MONGO_URI=<your-mongodb-uri>
-SESSION_SECRET=<your-secret-key>
-PORT=5000
+PORT = 5000
+
+MONGODB_URI = <YOUR MONGO DB URI>
+
+SESSION_SECRET = thisisatopsecret
+
+STRIPE_SECRET_KEY = <STRIPE SECRET KEY>
+```
+
+Create a `.env` or `.env.local` file inside `/admin` with : 
+```ini
+FORMSPREE_URL = <Your Form Spree URL>
+BACKEND_BASE_URL = http://localhost:5000/api
+```
+
+Create `.env` or `.env.local` file inside `/client` with :
+```ini
+BACKEND_BASE_URL = http://localhost:5000/api
 ```
 
 ### 🔹 Run the App

@@ -1,6 +1,6 @@
 import axios from 'axios';
-const BASE_URL = 'http://localhost:5000/api';
-const FORMSPREE_URL = "https://formspree.io/f/manpnbpn";
+const BASE_URL = import.meta.env.BACKEND_BASE_URL;
+const FORMSPREE_URL = import.meta.env.FORMSPREE_URL;
 
 // ADMIN LOGIN
 export const adminLogin = async (payload) => {

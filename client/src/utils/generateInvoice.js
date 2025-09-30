@@ -1,11 +1,11 @@
 import jsPDF from "jspdf";
-import logo from "/withoutbg.png"; // ✅ Clean-It logo
+import logo from "/withoutbg.png";
 
 export function generateInvoice({ payment, user, pickup }) {
   const doc = new jsPDF();
 
   // === HEADER ===
-  doc.addImage(logo, "PNG", 150, 8, 40, 40); // Logo top-right
+  doc.addImage(logo, "PNG", 150, 8, 40, 40);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
@@ -118,6 +118,5 @@ export function generateInvoice({ payment, user, pickup }) {
     y
   );
 
-  // Save PDF
   doc.save(`Invoice-${payment._id.slice(-6)}.pdf`);
 }
