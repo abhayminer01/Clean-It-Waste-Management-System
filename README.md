@@ -65,19 +65,11 @@ The system allows users to schedule waste pickups, rewards them with coins for p
 ---
 
 ## 🚀 Getting Started  
-
-### 🔹 Prerequisites  
-Make sure you have installed:  
-- [Node.js](https://nodejs.org/) >= 18  
-- [MongoDB](https://www.mongodb.com/) (local or Atlas)  
-- npm / yarn  
-
 ---
-
 ### 🔹 Clone the Repository  
 
 ```bash
-git clone https://github.com/<your-username>/clean-it.git
+git clone https://github.com/abhayminer01/Clean-It-Waste-Management-System.git
 cd clean-it
 ```
 
